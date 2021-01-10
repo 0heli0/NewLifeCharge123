@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationClientMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, code, terminal_no, brand, gun_type, charge_type,
+        charge_interface_type, power_min, power_max, voltage_min, voltage_max, auxiliary_type, 
+        create_time
+    </sql>
+
+    <sql id="Alias_Base_Column_List">
+        tsc.id, tsc.station_id, tsc.code, tsc.terminal_no, tsc.brand, tsc.gun_type, tsc.charge_type,
+        tsc.charge_interface_type, tsc.power_min, tsc.power_max, tsc.voltage_min, tsc.voltage_max, tsc.auxiliary_type,
+        tsc.create_time
+    </sql>
+
+
+
+    <select id="getAllStationClientCode" resultType="java.lang.String">
+        select code from tb_station_client ORDER BY create_time desc
+
+    </select>
+
+    <select id="getByStationId" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationClient">
+        select  <include refid="Base_Column_List" />
+        from tb_station_client
+        <where>
+            <if test="stationId!=null">
+                station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+        </where>
+
+    </select>
+
+
+    <!--获取某类型的某桩站下充电桩最大编号-->
+    <select id="getMaxCode"  resultType="java.lang.String">
+        select `code`
+        from tb_station_client tsc
+        INNER  JOIN  tb_station_detail tsd on tsd.station_id=tsc.station_id
+        where tsc.station_id =#{stationId} and tsd.type=#{stationType}
+        order by code desc limit 1
+    </select>
+
+
+    <select id="getGunNumGroupByStationClientId" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.dto.out.StationClientGunNumOut">
+        select tsc.id as station_client_id,count(tscg.id) as num
+        from tb_station_client tsc
+        left join tb_station_client_gun tscg on tscg.station_client_id=tsc.id
+        <where>
+            <if test="stationId!=null">
+                tsc.station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+        </where>
+        GROUP BY tsc.id
+    </select>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationClient">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_client
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countByStationId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_client  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        where t1.station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+    <select id="countByCompanyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_client  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        inner join tb_company_info tci on tci.id=tsi.company_id
+        where tci.id = #{companyId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getInfoByParams"  resultType="com.newlife.charge.core.domain.exModel.StationClientEx">
+        select
+        <include refid="Alias_Base_Column_List" />
+        ,tsd.name as station_name
+        from tb_station_client tsc
+        left join tb_station_detail tsd on tsd.station_id=tsc.station_id
+        where 1=1
+          <if test="id!=null">
+              and tsc.id = #{id,jdbcType=INTEGER}
+          </if>
+          <if test="code!=null and code!=''">
+              and tsc.code like CONCAT('%',#{code},'%')
+          </if>
+          <if test="terminalNo!=null and terminalNo!=''">
+              and tsc.terminal_no like CONCAT('%',#{terminalNo},'%')
+          </if>
+
+    </select>
+
+    <select id="getByCode"  resultType="com.newlife.charge.core.domain.exModel.StationClientEx">
+        select
+        <include refid="Alias_Base_Column_List" />
+        ,tsd.name as station_name
+        from tb_station_client tsc
+        left join tb_station_detail tsd on tsd.station_id=tsc.station_id
+        where tsc.code =#{code}
+    </select>
+
+
+    <select id="getByCodeList"  resultType="com.newlife.charge.core.domain.exModel.StationClientEx">
+        select
+        <include refid="Alias_Base_Column_List" />
+        ,tsd.name as station_name
+        from tb_station_client tsc
+        left join tb_station_detail tsd on tsd.station_id=tsc.station_id
+        where tsc.code in
+        <foreach collection="codeList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_client
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.StationClient">
+        insert into tb_station_client (id, station_id,
+            code, terminal_no, brand, 
+            gun_type, charge_type, charge_interface_type, 
+            power_min, power_max, voltage_min, 
+            voltage_max, auxiliary_type, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER},
+            #{code,jdbcType=VARCHAR}, #{terminalNo,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, 
+            #{gunType,jdbcType=TINYINT}, #{chargeType,jdbcType=TINYINT}, #{chargeInterfaceType,jdbcType=TINYINT}, 
+            #{powerMin,jdbcType=INTEGER}, #{powerMax,jdbcType=INTEGER}, #{voltageMin,jdbcType=INTEGER}, 
+            #{voltageMax,jdbcType=INTEGER}, #{auxiliaryType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationClient">
+        update tb_station_client
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="terminalNo != null">
+                terminal_no = #{terminalNo,jdbcType=VARCHAR},
+            </if>
+            <if test="brand != null">
+                brand = #{brand,jdbcType=VARCHAR},
+            </if>
+            <if test="gunType != null">
+                gun_type = #{gunType,jdbcType=TINYINT},
+            </if>
+            <if test="chargeType != null">
+                charge_type = #{chargeType,jdbcType=TINYINT},
+            </if>
+            <if test="chargeInterfaceType != null">
+                charge_interface_type = #{chargeInterfaceType,jdbcType=TINYINT},
+            </if>
+            <if test="powerMin != null">
+                power_min = #{powerMin,jdbcType=INTEGER},
+            </if>
+            <if test="powerMax != null">
+                power_max = #{powerMax,jdbcType=INTEGER},
+            </if>
+            <if test="voltageMin != null">
+                voltage_min = #{voltageMin,jdbcType=INTEGER},
+            </if>
+            <if test="voltageMax != null">
+                voltage_max = #{voltageMax,jdbcType=INTEGER},
+            </if>
+            <if test="auxiliaryType != null">
+                auxiliary_type = #{auxiliaryType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <!-- 充电桩分页查询-->
+    <select id="page" resultType="StationClientPageOut">
+        select
+            tsc.id, tsc.code,tsc.brand, tsc.gun_type,'' as gun_type_name, tsc.station_id ,tsd.name as station_name,tsc.create_time,
+            '' as station_parking_lot_codes,'' as station_client_gun_codes
+        from tb_station_client tsc
+        left join tb_station_detail tsd on tsd.station_id=tsc.station_id
+        where 1=1
+        <if test="code!=null and code!=''">
+           and tsc.code like CONCAT('%',#{code},'%')
+        </if>
+        <if test="gunType!=null ">
+           and tsc.gun_type =#{gunType}
+        </if>
+        order by tsc.id desc
+    </select>
+
+
+
+    <delete id="deleteByIds">
+        delete from tb_station_client where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+</mapper>

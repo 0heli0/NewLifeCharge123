@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.RegionsMapper">
+
+    <sql id="Base_Column_List">
+        id, name, spell, short_spell, display_order, parent_id, layer, distrct_id, distrct_name, 
+        city_id, city_name, province, hot, status, update_time, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.Regions">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_regions
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_regions
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.Regions">
+        insert into tb_regions (id, name, spell, 
+            short_spell, display_order, parent_id, 
+            layer, distrct_id, distrct_name, 
+            city_id, city_name, province, 
+            hot, status, update_time, 
+            create_time)
+        values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{spell,jdbcType=VARCHAR}, 
+            #{shortSpell,jdbcType=VARCHAR}, #{displayOrder,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, 
+            #{layer,jdbcType=TINYINT}, #{distrctId,jdbcType=INTEGER}, #{distrctName,jdbcType=VARCHAR}, 
+            #{cityId,jdbcType=INTEGER}, #{cityName,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+            #{hot,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{updateTime,jdbcType=TIMESTAMP}, 
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.Regions">
+        update tb_regions
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="spell != null">
+                spell = #{spell,jdbcType=VARCHAR},
+            </if>
+            <if test="shortSpell != null">
+                short_spell = #{shortSpell,jdbcType=VARCHAR},
+            </if>
+            <if test="displayOrder != null">
+                display_order = #{displayOrder,jdbcType=INTEGER},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="layer != null">
+                layer = #{layer,jdbcType=TINYINT},
+            </if>
+            <if test="distrctId != null">
+                distrct_id = #{distrctId,jdbcType=INTEGER},
+            </if>
+            <if test="distrctName != null">
+                distrct_name = #{distrctName,jdbcType=VARCHAR},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=INTEGER},
+            </if>
+            <if test="cityName != null">
+                city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="hot != null">
+                hot = #{hot,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

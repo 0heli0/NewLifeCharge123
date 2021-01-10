@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.WeixinPayLogMapper">
+
+    <sql id="Base_Column_List">
+        id, appid, mch_id, device_info, nonce_str, sign, sign_type, result_code, err_code, 
+        err_code_des, openid, is_subscribe, trade_type, bank_type, total_fee, settlement_total_fee, 
+        fee_type, cash_fee, cash_fee_type, coupon_fee, coupon_count, transaction_id, out_trade_no, 
+        attach, time_end, return_code, return_msg, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.WeixinPayLog">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_weixin_pay_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_weixin_pay_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.WeixinPayLog">
+        insert into tb_weixin_pay_log (appid, mch_id,
+            device_info, nonce_str, sign, 
+            sign_type, result_code, err_code, 
+            err_code_des, openid, is_subscribe, 
+            trade_type, bank_type, total_fee, 
+            settlement_total_fee, fee_type, cash_fee, 
+            cash_fee_type, coupon_fee, coupon_count, 
+            transaction_id, out_trade_no, attach, 
+            time_end, return_code, return_msg, 
+            create_time)
+        values (#{appid,jdbcType=VARCHAR}, #{mchId,jdbcType=VARCHAR},
+            #{deviceInfo,jdbcType=VARCHAR}, #{nonceStr,jdbcType=VARCHAR}, #{sign,jdbcType=VARCHAR}, 
+            #{signType,jdbcType=VARCHAR}, #{resultCode,jdbcType=VARCHAR}, #{errCode,jdbcType=VARCHAR}, 
+            #{errCodeDes,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, #{isSubscribe,jdbcType=VARCHAR}, 
+            #{tradeType,jdbcType=VARCHAR}, #{bankType,jdbcType=VARCHAR}, #{totalFee,jdbcType=DECIMAL}, 
+            #{settlementTotalFee,jdbcType=DECIMAL}, #{feeType,jdbcType=VARCHAR}, #{cashFee,jdbcType=DECIMAL}, 
+            #{cashFeeType,jdbcType=VARCHAR}, #{couponFee,jdbcType=DECIMAL}, #{couponCount,jdbcType=INTEGER}, 
+            #{transactionId,jdbcType=VARCHAR}, #{outTradeNo,jdbcType=VARCHAR}, #{attach,jdbcType=VARCHAR}, 
+            #{timeEnd,jdbcType=VARCHAR}, #{returnCode,jdbcType=VARCHAR}, #{returnMsg,jdbcType=VARCHAR}, 
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertByObj" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.WeixinPayLog">
+        insert into tb_weixin_pay_log
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="appid != null">appid,</if>
+            <if test="mchId != null">mch_id,</if>
+            <if test="deviceInfo != null">device_info,</if>
+            <if test="nonceStr != null">nonce_str,</if>
+            <if test="sign != null">sign,</if>
+            <if test="signType != null">sign_type,</if>
+            <if test="resultCode != null">result_code,</if>
+            <if test="errCode != null">err_code,</if>
+            <if test="errCodeDes != null">err_code_des,</if>
+            <if test="openid != null">openid,</if>
+            <if test="isSubscribe != null">is_subscribe,</if>
+            <if test="tradeType != null">trade_type,</if>
+            <if test="bankType != null">bank_type,</if>
+            <if test="totalFee != null">total_fee,</if>
+            <if test="settlementTotalFee != null">settlement_total_fee,</if>
+            <if test="feeType != null">fee_type,</if>
+            <if test="cashFee != null">cash_fee,</if>
+            <if test="cashFeeType != null">cash_fee_type,</if>
+            <if test="couponFee != null">coupon_fee,</if>
+            <if test="couponCount != null">coupon_count,</if>
+            <if test="transactionId != null">transaction_id,</if>
+            <if test="outTradeNo != null">out_trade_no,</if>
+            <if test="attach != null">attach,</if>
+            <if test="timeEnd != null">time_end,</if>
+            <if test="returnCode != null">return_code,</if>
+            <if test="returnMsg != null">return_msg,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="appid != null">#{appid,jdbcType=VARCHAR},</if>
+            <if test="mchId != null">#{mchId,jdbcType=VARCHAR},</if>
+            <if test="deviceInfo != null">#{deviceInfo,jdbcType=VARCHAR},</if>
+            <if test="nonceStr != null">#{nonceStr,jdbcType=VARCHAR},</if>
+            <if test="sign != null">#{sign,jdbcType=VARCHAR},</if>
+            <if test="signType != null">#{signType,jdbcType=VARCHAR},</if>
+            <if test="resultCode != null">#{resultCode,jdbcType=VARCHAR},</if>
+            <if test="errCode != null">#{errCode,jdbcType=VARCHAR},</if>
+            <if test="errCodeDes != null">#{errCodeDes,jdbcType=VARCHAR},</if>
+            <if test="openid != null">#{openid,jdbcType=VARCHAR}, </if>
+            <if test="isSubscribe != null">#{isSubscribe,jdbcType=VARCHAR},</if>
+            <if test="tradeType != null">#{tradeType,jdbcType=VARCHAR}, </if>
+            <if test="bankType != null">#{bankType,jdbcType=VARCHAR},</if>
+            <if test="totalFee != null">#{totalFee,jdbcType=DECIMAL},</if>
+            <if test="settlementTotalFee != null">#{settlementTotalFee,jdbcType=DECIMAL},</if>
+            <if test="feeType != null">#{feeType,jdbcType=VARCHAR},</if>
+            <if test="cashFee != null">#{cashFee,jdbcType=DECIMAL},</if>
+            <if test="cashFeeType != null">#{cashFeeType,jdbcType=VARCHAR}, </if>
+            <if test="couponFee != null">#{couponFee,jdbcType=DECIMAL},</if>
+            <if test="couponCount != null">#{couponCount,jdbcType=INTEGER},</if>
+            <if test="transactionId != null">#{transactionId,jdbcType=VARCHAR},</if>
+            <if test="outTradeNo != null">#{outTradeNo,jdbcType=VARCHAR},</if>
+            <if test="attach != null">#{attach,jdbcType=VARCHAR},</if>
+            <if test="timeEnd != null">#{timeEnd,jdbcType=VARCHAR},</if>
+            <if test="returnCode != null">#{returnCode,jdbcType=VARCHAR},</if>
+            <if test="returnMsg != null">#{returnMsg,jdbcType=VARCHAR}, </if>
+            <if test="createTime != null">#{createTime,jdbcType=TIMESTAMP}</if>
+        </trim>
+
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.WeixinPayLog">
+        update tb_weixin_pay_log
+        <set>
+            <if test="appid != null">
+                appid = #{appid,jdbcType=VARCHAR},
+            </if>
+            <if test="mchId != null">
+                mch_id = #{mchId,jdbcType=VARCHAR},
+            </if>
+            <if test="deviceInfo != null">
+                device_info = #{deviceInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="nonceStr != null">
+                nonce_str = #{nonceStr,jdbcType=VARCHAR},
+            </if>
+            <if test="sign != null">
+                sign = #{sign,jdbcType=VARCHAR},
+            </if>
+            <if test="signType != null">
+                sign_type = #{signType,jdbcType=VARCHAR},
+            </if>
+            <if test="resultCode != null">
+                result_code = #{resultCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCode != null">
+                err_code = #{errCode,jdbcType=VARCHAR},
+            </if>
+            <if test="errCodeDes != null">
+                err_code_des = #{errCodeDes,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                openid = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="isSubscribe != null">
+                is_subscribe = #{isSubscribe,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeType != null">
+                trade_type = #{tradeType,jdbcType=VARCHAR},
+            </if>
+            <if test="bankType != null">
+                bank_type = #{bankType,jdbcType=VARCHAR},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee,jdbcType=DECIMAL},
+            </if>
+            <if test="settlementTotalFee != null">
+                settlement_total_fee = #{settlementTotalFee,jdbcType=DECIMAL},
+            </if>
+            <if test="feeType != null">
+                fee_type = #{feeType,jdbcType=VARCHAR},
+            </if>
+            <if test="cashFee != null">
+                cash_fee = #{cashFee,jdbcType=DECIMAL},
+            </if>
+            <if test="cashFeeType != null">
+                cash_fee_type = #{cashFeeType,jdbcType=VARCHAR},
+            </if>
+            <if test="couponFee != null">
+                coupon_fee = #{couponFee,jdbcType=DECIMAL},
+            </if>
+            <if test="couponCount != null">
+                coupon_count = #{couponCount,jdbcType=INTEGER},
+            </if>
+            <if test="transactionId != null">
+                transaction_id = #{transactionId,jdbcType=VARCHAR},
+            </if>
+            <if test="outTradeNo != null">
+                out_trade_no = #{outTradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="attach != null">
+                attach = #{attach,jdbcType=VARCHAR},
+            </if>
+            <if test="timeEnd != null">
+                time_end = #{timeEnd,jdbcType=VARCHAR},
+            </if>
+            <if test="returnCode != null">
+                return_code = #{returnCode,jdbcType=VARCHAR},
+            </if>
+            <if test="returnMsg != null">
+                return_msg = #{returnMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="getBySn" parameterType="java.lang.String" resultType="com.newlife.charge.core.domain.WeixinPayLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_weixin_pay_log
+        where transaction_id = #{transactionId,jdbcType=VARCHAR}
+
+    </select>
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.ClientStationMapper">
+
+    <select id="stationDetail" resultType="com.newlife.charge.core.domain.exModel.ClientStationDetailEx">
+        SELECT
+        detail.station_id,
+        detail.`name`,
+        detail.parking_fee,
+        detail.managers,
+        detail.tel,
+        detail.remark,
+        info.charge_price,
+        info.service_price,
+        price.increase,
+        (SELECT count(0) FROM tb_station_time_price WHERE station_id = #{stationId, jdbcType=INTEGER}) AS increase_count
+        FROM
+        tb_station_detail detail
+        JOIN tb_station_info info ON info.id = detail.station_id
+        LEFT JOIN  (
+                    SELECT station_id,increase,time_begin,time_end
+                    FROM tb_station_time_price
+                    WHERE time_begin &lt;= CURTIME() and time_end &gt;= CURTIME() and station_id = #{stationId, jdbcType=INTEGER}
+                     ) AS  price ON price.station_id = info.id
+        WHERE detail.station_id = #{stationId, jdbcType=INTEGER}
+        LIMIT 1
+    </select>
+
+    <select id="timePriceDetail" resultType="com.newlife.charge.core.domain.exModel.ClientStationTimePriceEx">
+        SELECT
+            detail.`name`,
+            info.charge_price,
+            info.service_price,
+            price.station_id,
+            price.time_no,
+            price.time_begin,
+            price.time_end,
+            price.increase
+        FROM
+        tb_station_info info
+        JOIN tb_station_detail detail ON info.id = detail.station_id
+        JOIN tb_station_time_price price ON info.id = price.station_id
+        WHERE
+        info.id = #{stationId, jdbcType=INTEGER}
+        ORDER BY price.time_no ASC
+    </select>
+
+    <select id="truckSpaceList" resultType="com.newlife.charge.core.domain.exModel.TruckSpaceEx">
+        SELECT
+        lot.id,
+        lot.station_id,
+        lot.CODE,
+        lot.STATUS AS lot_status,
+        client.charge_type,
+        client.charge_interface_type,
+        client.power_min,
+        client.power_max,
+        client.auxiliary_type,
+        info.charge_price,
+        info.service_price,
+        price.increase,
+        gun.id AS gun_id,
+        gun.`code` AS gun_code,
+        gun.status
+        FROM
+        tb_station_parking_lot lot
+        JOIN tb_station_client_gun gun ON gun.station_parking_lot_id = lot.id
+        JOIN tb_station_client client ON client.id = gun.station_client_id
+        JOIN tb_station_info info ON client.station_id = info.id
+        LEFT JOIN tb_station_time_price price ON price.station_id = info.id and price.time_begin &lt;= CURTIME() and price.time_end &gt;= CURTIME()
+        WHERE lot.station_id = #{stationId, jdbcType=INTEGER};
+    </select>
+
+    <select id="truckSpaceDetail" resultType="com.newlife.charge.core.domain.exModel.TruckSpaceEx">
+        SELECT
+        lot.id,
+        lot.code,
+        lot.station_id,
+        lot.status as lot_status,
+        client.code as head_code,
+        client.charge_type,
+        client.charge_interface_type,
+        client.power_min,
+        client.power_max,
+        client.voltage_min,
+        client.voltage_max,
+        client.auxiliary_type,
+        info.id as station_id,
+        info.charge_price,
+        info.service_price,
+        price.increase,
+        gun.id as gun_id,
+        gun.code as gun_code,
+        gun.status
+        FROM
+        tb_station_parking_lot lot
+        JOIN tb_station_client_gun gun ON gun.station_parking_lot_id = lot.id
+        JOIN tb_station_client client ON client.id = gun.station_client_id
+        JOIN tb_station_info info ON client.station_id = info.id
+        LEFT JOIN tb_station_time_price price ON price.station_id = info.id and price.time_begin &lt;= CURTIME() and price.time_end>=CURTIME()
+        WHERE gun.id = #{id, jdbcType=INTEGER};
+    </select>
+
+</mapper>

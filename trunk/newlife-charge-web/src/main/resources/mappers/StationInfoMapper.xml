@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationInfoMapper">
+
+    <sql id="Base_Column_List">
+        id, company_id, use_balance, no_check_balance, locked_balance, charge_price, service_price, 
+        status,del_flag, remark, create_time
+    </sql>
+
+
+    <sql id="Detail_Base_Column_List">
+        name, province, city, address, lat, lng, cover_img, managers, free_parking,
+        parking_fee, parking, business_hours, tel, star, type
+    </sql>
+
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationInfo">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectList" resultType="com.newlife.charge.core.dto.out.SelectListOut">
+        select tsi.id,tsd.name
+        from tb_station_info tsi
+        inner join tb_station_detail tsd on tsd.station_id = tsi.id
+        where tsi.status=1 and tsi.del_flag=0
+    </select>
+
+    <select id="page"  resultType="com.newlife.charge.core.dto.out.GeneralStationInfoPageOut">
+        select tsi.id,tsd.name,tsd.address,tci.company_name
+        from tb_station_info tsi
+        left join tb_station_detail tsd on tsd.station_id=tsi.id
+        left join tb_company_info tci on tci.id=tsi.company_id
+        where tsi.del_flag = 0
+        <if test="stationName!=null and stationName!=''">
+            and tsd.name like CONCAT('%',#{stationName},'%')
+        </if>
+        <if test="companyName!=null and companyName!=''">
+            and tci.company_name like CONCAT('%',#{companyName},'%')
+        </if>
+        order by tsi.create_time desc
+    </select>
+
+
+    <select id="getById" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.exModel.StationInfoEx">
+        select tci.company_name,
+        tsi.id, tsi.company_id, tsi.use_balance, tsi.no_check_balance, tsi.locked_balance, tsi.charge_price, tsi.service_price,
+        tsi.status,tsi.del_flag, tsi.remark, tsi.create_time,
+        tsd.name, tsd.province, tsd.city, tsd.address, tsd.lat, tsd.lng, tsd.cover_img, tsd.managers, tsd.free_parking,
+        tsd.parking_fee, tsd.parking, tsd.business_hours, tsd.tel, tsd.star, tsd.type
+        from tb_station_info tsi
+        left join tb_station_detail tsd on tsd.station_id=tsi.id
+        left join tb_company_info tci on tci.id=tsi.company_id
+        where tsi.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getCurrentChargePrice" parameterType="java.lang.Integer" resultType="java.math.BigDecimal">
+        select  (tstp.increase/100*tsi.charge_price+tsi.charge_price) as current_charge_price
+        from tb_station_info tsi
+        left join tb_company_info tci on tci.id=tsi.company_id
+        left join tb_station_time_price tstp on tsi.id=tstp.station_id
+        where  CURRENT_TIME &gt;= tstp.time_begin and CURRENT_TIME &lt; tstp.time_end
+            and tsi.id = #{id,jdbcType=INTEGER}
+            order by tstp.create_time desc
+            limit 1
+    </select>
+
+
+    <select id="countByCompanyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_info
+        where company_id = #{companyId,jdbcType=INTEGER}
+    </select>
+
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationInfo">
+        insert into tb_station_info (id, company_id, use_balance, 
+            no_check_balance, locked_balance, charge_price, 
+            service_price,  status,del_flag,
+            remark, create_time)
+        values (#{id,jdbcType=INTEGER}, #{companyId,jdbcType=INTEGER}, #{useBalance,jdbcType=DECIMAL}, 
+            #{noCheckBalance,jdbcType=DECIMAL}, #{lockedBalance,jdbcType=DECIMAL}, #{chargePrice,jdbcType=DECIMAL}, 
+            #{servicePrice,jdbcType=DECIMAL}, #{status,jdbcType=INTEGER},#{delFlag,jdbcType=INTEGER},
+            #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationInfo">
+        update tb_station_info
+        <set>
+            <if test="companyId != null">
+                company_id = #{companyId,jdbcType=INTEGER},
+            </if>
+            <if test="useBalance != null">
+                use_balance = #{useBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="noCheckBalance != null">
+                no_check_balance = #{noCheckBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="lockedBalance != null">
+                locked_balance = #{lockedBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="chargePrice != null">
+                charge_price = #{chargePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="servicePrice != null">
+                service_price = #{servicePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <update id="updateStatusByIds">
+        update tb_station_info
+        <set>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </update>
+
+
+    <update id="updateDelFlagByIds">
+        update tb_station_info
+        <set>
+            <if test="delFlag != null">
+                del_flag = #{delFlag,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </update>
+
+    <select id="selectListByCompanyId" resultType="com.newlife.charge.core.dto.out.StationInfoOut">
+        select si.*,sd.name
+        from tb_station_info si left join tb_station_detail sd on si.id = sd.station_id
+        left join tb_station_user_ref suf on si.id = suf.station_id
+        where si.company_id = #{companyId,jdbcType=INTEGER} and suf.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByName" parameterType="java.lang.String"
+            resultType="com.newlife.charge.core.domain.StationInfo">
+      select info.*
+       from  tb_station_info info
+       join tb_station_detail detail on detail.station_id = info.id
+       where
+      detail.name like CONCAT('%',#{name, jdbcType=VARCHAR},'%')
+    </select>
+</mapper>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationParkingLotMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, code, status, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationParkingLot">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_parking_lot
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="selectList"  resultType="com.newlife.charge.core.dto.out.SelectListOut">
+        select id,code as name
+        from tb_station_parking_lot
+        where station_id = #{stationId,jdbcType=INTEGER}
+        and id not in (select DISTINCT station_parking_lot_id from tb_station_client_gun where station_id=#{stationId,jdbcType=INTEGER})
+        <if test="stationParkingLotId!=null">
+            UNION all
+            select id,code as name
+            from tb_station_parking_lot
+            where id = #{stationParkingLotId,jdbcType=INTEGER}
+        </if>
+
+    </select>
+
+
+    <select id="countByStationId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_parking_lot  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        where t1.station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countByCompanyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_parking_lot  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        inner join tb_company_info tci on tci.id=tsi.company_id
+
+        where tci.id = #{companyId,jdbcType=INTEGER}
+    </select>
+
+
+    <!--<select id="getByCode" resultType="com.newlife.charge.core.domain.StationParkingLot">-->
+        <!--select-->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from tb_station_parking_lot-->
+        <!--where code = #{code,jdbcType=INTEGER}-->
+    <!--</select>-->
+
+    <select id="getByCodeAndStationId" resultType="com.newlife.charge.core.domain.StationParkingLot">
+        select
+        <include refid="Base_Column_List" />
+        from tb_station_parking_lot
+        where code = #{code,jdbcType=VARCHAR} and station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getInfoByStationClientId" resultType="com.newlife.charge.core.domain.StationParkingLot">
+        select  tspl.id,tspl.code
+        from tb_station_parking_lot tspl
+        LEFT JOIN  tb_station_client_gun tscg on tscg.station_parking_lot_id=tspl.id
+        LEFT JOIN  tb_station_client tsc on tsc.id=tscg.station_client_id
+        where tsc.id = #{stationClientId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_parking_lot
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationParkingLot">
+        insert into tb_station_parking_lot (id, station_id, code, 
+            create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, 
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationParkingLot">
+        update tb_station_parking_lot
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="page"  resultType="com.newlife.charge.core.dto.out.GeneralStationParkingLotPageOut">
+        select
+              tspl.id,tspl.code,tspl.station_id,tspl.create_time,
+              tsd.name as station_name,tsc.id as station_client_id,tsc.code as station_client_code,
+              tscg.id as station_client_gun_id,tscg.code as station_client_gun_code
+        from tb_station_parking_lot tspl
+        left join  tb_station_detail tsd on tsd.station_id=tspl.station_id
+        left join  tb_station_client_gun tscg on tscg.station_parking_lot_id=tspl.id
+        left join  tb_station_client tsc on tsc.id=tscg.station_client_id
+        where 1=1
+        <if test="stationName!=null and stationName!=''">
+            AND tsd.name LIKE CONCAT('%',#{stationName},'%')
+        </if>
+        ORDER BY  tspl.id desc
+    </select>
+
+    <delete id="deleteByIds">
+        delete from tb_station_parking_lot where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <select id="getByParams" parameterType="com.newlife.charge.core.domain.StationParkingLot"
+    resultType="com.newlife.charge.core.domain.StationParkingLot">
+      select * from tb_station_parking_lot
+      <where>
+          <if test="stationId != null">
+              and station_id = #{stationId,jdbcType=INTEGER}
+          </if>
+
+          <if test="code != null">
+              and code = #{code,jdbcType=VARCHAR}
+          </if>
+
+          <if test="status != null">
+              and status = #{status,jdbcType=INTEGER}
+          </if>
+
+          <if test="createTime != null">
+              and create_time = #{createTime,jdbcType=TIMESTAMP}
+          </if>
+      </where>
+    </select>
+
+</mapper>

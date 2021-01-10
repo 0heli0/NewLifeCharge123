@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationUserRefMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, user_id, status, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationUserRef">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_user_ref
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_user_ref
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByIdsAndStation">
+        delete from tb_station_user_ref
+        where station_id = #{stationId,jdbcType=INTEGER} and user_id in
+        <foreach collection="userIds" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationUserRef">
+        insert into tb_station_user_ref (id, station_id, user_id, 
+            status, create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+            #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationUserRef">
+        update tb_station_user_ref
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="getByUserIdAndCompanyId" resultType="StationUserRefOut">
+        select sur.*,ci.company_name,ci.id as companyInfoId
+        from tb_station_user_ref sur
+        left join tb_station_info si on sur.station_id = si.id
+        left join tb_company_info ci on si.company_id = ci.id
+        <where>
+            <if test="userId != null">
+               and sur.user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="companyInfoId != null">
+                and si.company_id = #{companyInfoId,jdbcType=INTEGER}
+            </if>
+            <if test="userIds != null">
+                and sur.user_id in
+                <foreach collection="userIds" index="index" item="item" open="(" separator="," close=")">
+                    ${item}
+                </foreach>
+            </if>
+        </where>
+        order by si.create_time asc
+    </select>
+
+    <select id="getByQuery" resultType="StationUserRefOut">
+        select * from tb_station_user_ref sur
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+</mapper>

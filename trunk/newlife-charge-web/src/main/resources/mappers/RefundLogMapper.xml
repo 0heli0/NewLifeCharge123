@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.RefundLogMapper">
+
+    <sql id="Base_Column_List">
+        id, order_id, order_sn, payment_sn, user_id, total_price, refund_status, pay_time, create_time
+    </sql>
+    <sql id="WeiXin_Base_Column_List">
+        id, appid, mch_appid, mch_id, device_info, nonce_str, sign, sign_type, result_code,
+        err_code, err_code_des, openid, payment_no, partner_trade_no, attach, payment_time,
+        return_code, return_msg, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.RefundLog">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_refund_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_refund_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.RefundLog">
+        insert into tb_refund_log (order_id, order_sn, payment_sn,
+            user_id, total_price, refund_status, 
+            pay_time, create_time)
+        values (#{orderId,jdbcType=INTEGER}, #{orderSn,jdbcType=VARCHAR},#{paymentSn,jdbcType=VARCHAR},
+            #{userId,jdbcType=INTEGER}, #{totalPrice,jdbcType=DECIMAL}, #{refundStatus,jdbcType=TINYINT}, 
+            #{payTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.RefundLog">
+        update tb_refund_log
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
+            </if>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="totalPrice != null">
+                total_price = #{totalPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="refundStatus != null">
+                refund_status = #{refundStatus,jdbcType=TINYINT},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="paymentSn != null ">
+                payment_sn = #{paymentSn,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <insert id="insertWeiXinLog" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.WeixinRefundLog">
+        insert into `tb_weixin_refund_log`(
+        appid, mch_appid, mch_id, device_info, nonce_str, sign, sign_type, result_code,
+        err_code, err_code_des, openid, payment_no, partner_trade_no, attach, payment_time,
+        return_code, return_msg, create_time
+        ) values
+        (
+        #{appid,jdbcType=VARCHAR}, #{mchAppid,jdbcType=VARCHAR}, #{mchId,jdbcType=VARCHAR}, #{deviceInfo,jdbcType=VARCHAR},
+        #{nonceStr,jdbcType=VARCHAR}, #{sign,jdbcType=VARCHAR}, #{signType,jdbcType=VARCHAR}, #{resultCode,jdbcType=VARCHAR},
+        #{errCode,jdbcType=VARCHAR}, #{errCodeDes,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, #{paymentNo,jdbcType=VARCHAR},
+        #{partnerTradeNo,jdbcType=VARCHAR}, #{attach,jdbcType=VARCHAR}, #{paymentTime,jdbcType=VARCHAR},
+        #{returnCode,jdbcType=VARCHAR}, #{returnMsg,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+        )
+    </insert>
+    <select id="getBySn" parameterType="java.lang.String" resultType="com.newlife.charge.core.domain.RefundLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_refund_log
+        where order_sn = #{orderSn,jdbcType=VARCHAR}
+        order by create_time desc
+        limit 1
+    </select>
+</mapper>

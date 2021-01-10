@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.CompanyInfoMapper">
+
+    <sql id="Base_Column_List">
+        id, user_id,company_name, company_code, company_img, manager_name, manager_id_card_no, manager_hand_id_card_img,
+        manager_hand_id_card_img_back,bank_id, debit_card_no, bank_province_id, bank_city_id, sub_bank_name, audit_status,
+        audit_time, remark,commission_ration, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.CompanyInfo">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_company_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="generalIndexNoAuditCompanyList"  resultType="com.newlife.charge.core.dto.out.GeneralIndexNoAuditCompanyOut">
+        select tu.id,tu.mobile,tci.company_name,tci.create_time
+        from tb_user tu
+        INNER JOIN tb_company_info tci on tci.user_id=tu.id
+        where 1=1 and tu.user_type=2
+        <if test="companyName!=null and companyName!=''">
+            AND tci.company_name LIKE CONCAT('%',#{companyName},'%')
+        </if>
+
+        <if test="mobile!=null and mobile!=''">
+            AND tu.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+
+        <if test="managerName!=null and managerName!=''">
+            AND tci.manager_name LIKE CONCAT('%',#{managerName},'%')
+        </if>
+
+        <if test="auditStatus!=null">
+            AND tci.audit_status =#{auditStatus}
+        </if>
+
+        ORDER BY  tci.create_time desc
+    </select>
+
+
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_company_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.CompanyInfo">
+        insert into tb_company_info (id,user_id, company_name, company_code,
+            company_img, manager_name, manager_id_card_no, 
+            manager_hand_id_card_img,manager_hand_id_card_img_back, bank_id, debit_card_no,
+            bank_province_id, bank_city_id, sub_bank_name, 
+            audit_status, audit_time, remark, commission_ration,
+            create_time)
+        values (#{id,jdbcType=INTEGER},#{userId,jdbcType=INTEGER}, #{companyName,jdbcType=VARCHAR}, #{companyCode,jdbcType=VARCHAR},
+            #{companyImg,jdbcType=VARCHAR}, #{managerName,jdbcType=VARCHAR}, #{managerIdCardNo,jdbcType=VARCHAR}, 
+            #{managerHandIdCardImg,jdbcType=VARCHAR},#{managerHandIdCardImgBack,jdbcType=VARCHAR},
+            #{bankId,jdbcType=INTEGER}, #{debitCardNo,jdbcType=VARCHAR},
+            #{bankProvinceId,jdbcType=INTEGER}, #{bankCityId,jdbcType=INTEGER}, #{subBankName,jdbcType=VARCHAR}, 
+            #{auditStatus,jdbcType=TINYINT}, #{auditTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR},
+            #{commissionRation,jdbcType=DECIMAL},#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.CompanyInfo">
+        update tb_company_info
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="companyName != null">
+                company_name = #{companyName,jdbcType=VARCHAR},
+            </if>
+            <if test="companyCode != null">
+                company_code = #{companyCode,jdbcType=VARCHAR},
+            </if>
+            <if test="companyImg != null">
+                company_img = #{companyImg,jdbcType=VARCHAR},
+            </if>
+            <if test="managerName != null">
+                manager_name = #{managerName,jdbcType=VARCHAR},
+            </if>
+            <if test="managerIdCardNo != null">
+                manager_id_card_no = #{managerIdCardNo,jdbcType=VARCHAR},
+            </if>
+            <if test="managerHandIdCardImg != null">
+                manager_hand_id_card_img = #{managerHandIdCardImg,jdbcType=VARCHAR},
+            </if>
+            <if test="managerHandIdCardImgBack != null">
+                manager_hand_id_card_img_back = #{managerHandIdCardImgBack,jdbcType=VARCHAR},
+            </if>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=INTEGER},
+            </if>
+            <if test="debitCardNo != null">
+                debit_card_no = #{debitCardNo,jdbcType=VARCHAR},
+            </if>
+            <if test="bankProvinceId != null">
+                bank_province_id = #{bankProvinceId,jdbcType=INTEGER},
+            </if>
+            <if test="bankCityId != null">
+                bank_city_id = #{bankCityId,jdbcType=INTEGER},
+            </if>
+            <if test="subBankName != null">
+                sub_bank_name = #{subBankName,jdbcType=VARCHAR},
+            </if>
+            <if test="auditStatus != null">
+                audit_status = #{auditStatus,jdbcType=TINYINT},
+            </if>
+            <if test="auditTime != null">
+                audit_time = #{auditTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="commissionRation != null">
+                commission_ration = #{commissionRation,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <!--总后台审核通过公司列表按审核时间倒序排列-->
+    <select id="page" resultType="CompanyInfo">
+        select
+        <include refid="Base_Column_List" />
+        from  tb_company_info
+        <where>
+            <if test="auditStatus!=null">
+                and audit_status =#{auditStatus}
+            </if>
+            <if test="companyName!=null and companyName!=''">
+              and company_name like CONCAT('%',#{companyName},'%')
+            </if>
+        </where>
+        order by audit_time desc
+    </select>
+
+    <select id="selectList" resultType="GeneralCompanyInfoSelectListOut">
+        select id,company_name
+        from  tb_company_info
+        <where>
+            <if test="auditStatus!=null">
+                and audit_status =#{auditStatus}
+            </if>
+            <if test="companyName!=null and companyName!=''">
+              and company_name like CONCAT('%',#{companyName},'%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+
+     <select id="getCompanyUserInfo" resultType="GeneralCompanyUserInfoOut">
+         select tu.id,tci.id as company_id,tu.mobile,tuwx.open_id,tci.company_name,tci.manager_name,tci.manager_id_card_no,
+         tci.bank_id,tbi.bank_name,tci.debit_card_no,tci.bank_province_id,ta.name as bank_province_name,tci.bank_city_id,taa.name as bank_city_name,
+         tci.sub_bank_name,tci.audit_status,'' as audit_status_str,tci.commission_ration,tu.create_time,tu.login_time,tci.company_img,
+         tci.manager_hand_id_card_img,tci.manager_hand_id_card_img_back
+         from tb_user tu
+         left JOIN tb_company_info tci on tci.user_id=tu.id
+         left join tb_user_weixin tuwx on tuwx.user_id=tu.id
+         left join tb_bank_info tbi on tbi.id=tci.bank_id
+         left join tb_area ta on ta.id=tci.bank_province_id
+         left join tb_area taa on taa.id=tci.bank_city_id
+
+         where tu.id=#{id}
+
+    </select>
+
+
+     <select id="getInfoById" resultType="GeneralCompanyInfoOut">
+         select tci.id ,tci.company_name,tci.company_code,tci.manager_name,tci.manager_id_card_no,
+         tci.bank_id,tbi.bank_name,tci.debit_card_no,tci.bank_province_id,ta.name as bank_province_name ,
+             tci.bank_city_id,taa.name as bank_city_name,
+         tci.sub_bank_name,tci.create_time,tci.company_img,tci.manager_hand_id_card_img,tci.manager_hand_id_card_img_back,
+         0 as station_info_count,0 as station_parking_lot_count,0 as station_client_count,0 as station_client_gun_count
+         from tb_company_info tci
+         left join tb_bank_info tbi on tbi.id=tci.bank_id
+         left join tb_area ta on ta.id=tci.bank_province_id
+         left join tb_area taa on taa.id=tci.bank_city_id
+         where tci.id=#{id}
+
+    </select>
+
+    <select id="getByUserId" resultType="CompanyInfoEx">
+        select ci.*,bi.bank_name,ta.name as bank_province_name,taa.name as bank_city_name from  tb_company_info ci
+        left join tb_bank_info bi on ci.bank_id = bi.id
+        left join tb_area ta on ta.id=ci.bank_province_id
+        left join tb_area taa on taa.id=ci.bank_city_id
+        where ci.user_id = #{userId,jdbcType=INTEGER}
+    </select>
+
+    <select id="userCompanys" resultType="CompanyInfo">
+        select ci.* from  tb_user u
+        left join tb_role_user_ref rur on u.id = rur.user_id
+        left join tb_role_info ri on rur.role_id = ri.id
+        left join tb_station_info si on ri.station_id = si.id
+        left join tb_company_info ci on si.company_id = ci.id
+        where u.id = #{userId,jdbcType=INTEGER} group by ci.id
+    </select>
+
+
+    <select id="getInfoByStationId" resultType="StationCompanyInfoOut">
+        select ci.*,bi.bank_name,ta.name as bank_province_name,taa.name as bank_city_name from tb_station_info si
+        left join tb_company_info ci on si.company_id = ci.id
+        left join tb_bank_info bi on ci.bank_id = bi.id
+        left join tb_area ta on ta.id=ci.bank_province_id
+        left join tb_area taa on taa.id=ci.bank_city_id
+        where si.id = #{stationId,jdbcType=INTEGER}
+    </select>
+</mapper>

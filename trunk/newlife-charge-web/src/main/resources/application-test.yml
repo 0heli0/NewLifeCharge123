@@ -1,0 +1,79 @@
+#server
+server:
+  port: 8990
+  address: 0.0.0.0
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+    datasource:
+        name: new_life_charge
+        url: jdbc:mysql://192.168.17.152:3306/new_life_charge?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false
+        username: root
+        password: Mseenet.com
+#redis
+    redis:
+      host: 192.168.17.152
+      port: 6379
+      password: mseenet
+      database: 12
+
+logging:
+  path: /mnt/vdb1/wwwlogs/t_newlife_charge
+  file: test
+
+#后台接口IP（外网）
+newLife:
+  charge:
+    ip: 47.106.121.72
+
+
+#  充电桩控制中心
+charge:
+  pile:
+    server:
+      #IP（socket层）
+      ip: 192.168.17.*
+      #请求地址-七牛六号
+      path: http://192.168.17.150:8991
+      #同步时段电价和服务费地址
+      syncTimeAndServicePriceUri: /api/chargePileServer/syncTimeAndServicePrice
+      #启动/停止充电
+      startStopChargeUri: /api/chargePileServer/startStopCommand
+
+
+
+
+##图片服务器
+#外网
+imageService: http://upload.mseenet.com
+
+#通用服务器地址
+commonService:
+#  path: http://common.service.ms.com:8982
+#  path: http://common.service.ms.com
+#  path: http://service.mseenet.com
+  path: http://47.106.121.72:8090
+  #上传图片msKey
+  picApiKey:  12345678
+  picSecretKey: 87654321
+  picMsApiKey:  img_123456
+  uploadFile: /api/img/uploadFile
+  uploadFiles:  /api/img/uploadFiles
+  #发送邮箱msKey
+  emailApiKey: 1234567890
+  emailSecretKey: 0987654321
+  #发送短信msKey
+  msmApiKey: 123456789
+  msmSecretKey: 987654321
+  sendSmsPath: /api/sms/sendMessage
+
+#短信配置
+sms:
+  #是否发送短信 （true:发送，false:不发送）
+  isSend: true
+
+#充值退款
+pay:
+  #是否启用真实支付数据（true：启用，false：不启用）
+  isReal: true

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.OperationLogMapper">
+
+    <sql id="Base_Column_List">
+        id, user_id, user_type, station_id, login_name, operation_type, action,
+        operation_moudle, request_url, ip, create_time
+    </sql>
+
+    <sql id="Blob_Column_List">
+        operation_text
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.OperationLog">
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from tb_operation_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_operation_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.OperationLog">
+        insert into tb_operation_log (id, user_id, user_type, 
+            station_id, login_name,
+            operation_type, action, operation_moudle, 
+            request_url, ip, create_time, 
+            operation_text)
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{userType,jdbcType=TINYINT}, 
+            #{stationId,jdbcType=INTEGER}, #{loginName,jdbcType=VARCHAR},
+            #{operationType,jdbcType=TINYINT}, #{action,jdbcType=VARCHAR}, #{operationMoudle,jdbcType=VARCHAR}, 
+            #{requestUrl,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+            #{operationText,jdbcType=LONGVARCHAR})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.OperationLog">
+        update tb_operation_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=TINYINT},
+            </if>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="loginName != null">
+                login_name = #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="operationType != null">
+                operation_type = #{operationType,jdbcType=TINYINT},
+            </if>
+            <if test="action != null">
+                action = #{action,jdbcType=VARCHAR},
+            </if>
+            <if test="operationMoudle != null">
+                operation_moudle = #{operationMoudle,jdbcType=VARCHAR},
+            </if>
+            <if test="requestUrl != null">
+                request_url = #{requestUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="ip != null">
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="operationText != null">
+                operation_text = #{operationText,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+
+    <select id="page" parameterType="com.newlife.charge.core.dto.in.OperationLogQueryIn" resultType="OperationLog">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+         from tb_operation_log
+        <where>
+            <if test="userName != null and userName!=''">
+                and login_name like CONCAT('%',#{userName},'%')
+            </if>
+            <if test="ip != null and ip!=''">
+                and ip like CONCAT('%',#{ip},'%')
+            </if>
+            <if test="operationType != null ">
+                and operation_type = #{operationType}
+            </if>
+
+            <if test="startTime!=null">
+                and create_time &gt;= #{startTime}
+            </if>
+
+            <if test="endTime!=null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+
+        order by id desc
+    </select>
+
+</mapper>

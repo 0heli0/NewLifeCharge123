@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationImageMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, title, img_url, cover_flag, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationImage">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_image
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_image
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationImage">
+        insert into tb_station_image (id, station_id, title, 
+            img_url, cover_flag, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, 
+            #{imgUrl,jdbcType=VARCHAR}, #{coverFlag,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationImage">
+        update tb_station_image
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="imgUrl != null">
+                img_url = #{imgUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="coverFlag != null">
+                cover_flag = #{coverFlag,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

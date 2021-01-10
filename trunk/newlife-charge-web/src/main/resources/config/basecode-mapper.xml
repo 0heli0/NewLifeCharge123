@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <!--xml定制替换-->
+    <!--<mapping>-->
+        <!--<class-a>com.school.admin.core.exModel.GradeEx</class-a>-->
+        <!--<class-b>com.school.admin.core.dto.out.GradeListOutDto</class-b>-->
+        <!--<field>-->
+            <!--<a>id</a>-->
+            <!--<b>gradeId</b>-->
+        <!--</field>-->
+    <!--</mapping>-->
+
+</mappings>

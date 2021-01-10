@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.ClientAlarmDataMapper">
+
+    <sql id="Base_Column_List">
+        id, station_client_code, gun_code, alarm_point, alarm_point_name, alarm_reason, alarm_reason_name, 
+        alarm_time_start, alarm_time_end, alarm_time, affect_charge, upload_master, record_no, 
+        record_storage_no, create_time
+    </sql>
+
+    <select id="page"  resultType="com.newlife.charge.core.dto.out.ClientAlarmDataPageOut">
+        select t1.id,t1.station_client_code,t1.gun_code,t1.alarm_point_name,t1.alarm_reason_name,t1.alarm_time_start,t1.alarm_time_end,
+              tsd.name as station_name,tci.company_name,t1.create_time
+        from tb_client_alarm_data t1
+        LEFT JOIN tb_station_client tsc on tsc.code=t1.station_client_code
+        LEFT JOIN tb_station_detail tsd on tsd.station_id=tsc.station_id
+        LEFT JOIN tb_station_info tsi on tsi.id=tsc.station_id
+        LEFT JOIN tb_company_info tci on tci.id=tsi.company_id
+        <where>
+            <if test="stationId!=null">
+                and tsi.id = #{stationId}
+            </if>
+            <if test="startTime!=null">
+                and t1.alarm_time_start &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and t1.alarm_time_end &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY t1.alarm_time_start desc
+    </select>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.ClientAlarmData">
+        select
+        <include refid="Base_Column_List" />
+        from tb_client_alarm_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByParams"  resultType="com.newlife.charge.core.domain.ClientAlarmData">
+        select
+        <include refid="Base_Column_List" />
+        from tb_client_alarm_data
+        <where>
+            <if test="stationClientCode!=null and stationClientCode!=''">
+                and station_client_code=#{stationClientCode}
+            </if>
+            <if test="recordNo!=null ">
+                and record_no=#{recordNo}
+            </if>
+            <if test="recordStorageNo!=null ">
+                and record_storage_no=#{recordStorageNo}
+            </if>
+        </where>
+    </select>
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_client_alarm_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.ClientAlarmData">
+        insert into tb_client_alarm_data (id, station_client_code, gun_code, 
+            alarm_point, alarm_point_name, alarm_reason, 
+            alarm_reason_name, alarm_time_start, alarm_time_end, 
+            alarm_time, affect_charge, upload_master, 
+            record_no, record_storage_no, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{stationClientCode,jdbcType=VARCHAR}, #{gunCode,jdbcType=VARCHAR}, 
+            #{alarmPoint,jdbcType=VARCHAR}, #{alarmPointName,jdbcType=VARCHAR}, #{alarmReason,jdbcType=VARCHAR}, 
+            #{alarmReasonName,jdbcType=VARCHAR}, #{alarmTimeStart,jdbcType=TIMESTAMP}, #{alarmTimeEnd,jdbcType=TIMESTAMP}, 
+            #{alarmTime,jdbcType=VARCHAR}, #{affectCharge,jdbcType=TINYINT}, #{uploadMaster,jdbcType=TINYINT}, 
+            #{recordNo,jdbcType=INTEGER}, #{recordStorageNo,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.ClientAlarmData">
+        update tb_client_alarm_data
+        <set>
+            <if test="stationClientCode != null">
+                station_client_code = #{stationClientCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gunCode != null">
+                gun_code = #{gunCode,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmPoint != null">
+                alarm_point = #{alarmPoint,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmPointName != null">
+                alarm_point_name = #{alarmPointName,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmReason != null">
+                alarm_reason = #{alarmReason,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmReasonName != null">
+                alarm_reason_name = #{alarmReasonName,jdbcType=VARCHAR},
+            </if>
+            <if test="alarmTimeStart != null">
+                alarm_time_start = #{alarmTimeStart,jdbcType=TIMESTAMP},
+            </if>
+            <if test="alarmTimeEnd != null">
+                alarm_time_end = #{alarmTimeEnd,jdbcType=TIMESTAMP},
+            </if>
+            <if test="alarmTime != null">
+                alarm_time = #{alarmTime,jdbcType=VARCHAR},
+            </if>
+            <if test="affectCharge != null">
+                affect_charge = #{affectCharge,jdbcType=TINYINT},
+            </if>
+            <if test="uploadMaster != null">
+                upload_master = #{uploadMaster,jdbcType=TINYINT},
+            </if>
+            <if test="recordNo != null">
+                record_no = #{recordNo,jdbcType=INTEGER},
+            </if>
+            <if test="recordStorageNo != null">
+                record_storage_no = #{recordStorageNo,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+
+
+</mapper>

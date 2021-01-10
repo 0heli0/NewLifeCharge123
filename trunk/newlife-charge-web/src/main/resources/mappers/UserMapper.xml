@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.UserMapper">
+
+    <sql id="Base_Column_List">
+        id, user_type, status, user_name, password, salt, mobile, email, real_name, nick_name, 
+        avatar_url, balance, gender, verify_email, verify_mobile, ip, create_user, lift_ban_time, 
+        login_time, create_time
+    </sql>
+
+    <sql id="Car_Owner_List">
+        id, status, user_name, mobile, email, real_name, nick_name,
+        avatar_url, balance, gender, verify_email, verify_mobile, ip, create_user, lift_ban_time,
+        login_time, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.User">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--桩站主账号-->
+    <select id="getStationMainUser" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.User">
+        select
+        tu.*
+        from tb_user tu
+        INNER JOIN tb_station_user_ref tsur on tsur.user_id = tu.id
+        INNER JOIN tb_station_info tsi on tsi.id=tsur.station_id
+        where tsi.id = #{stationId,jdbcType=INTEGER} and tu.user_type=2
+    </select>
+
+
+    <select id="generalInfo" parameterType="java.lang.Integer" resultType="GeneralUserOut">
+        select tu.id,tu.password,tu.status,tu.nick_name,tu.mobile,tu.real_name,tri.role_name,tri.id as role_id
+        from tb_user tu
+        left join tb_role_user_ref tru on tru.user_id = tu.id
+        left join tb_role_info tri on tru.role_id = tri.id
+        where tu.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.User">
+        insert into tb_user (id, user_type, status, 
+            user_name, password, salt, 
+            mobile, email, real_name, 
+            nick_name, avatar_url, balance, 
+            gender, verify_email, verify_mobile, 
+            ip, create_user, lift_ban_time, 
+            login_time, create_time)
+        values (#{id,jdbcType=INTEGER}, #{userType,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+            #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{salt,jdbcType=VARCHAR}, 
+            #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
+            #{nickName,jdbcType=VARCHAR}, #{avatarUrl,jdbcType=VARCHAR}, #{balance,jdbcType=DECIMAL}, 
+            #{gender,jdbcType=TINYINT}, #{verifyEmail,jdbcType=TINYINT}, #{verifyMobile,jdbcType=TINYINT}, 
+            #{ip,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{liftBanTime,jdbcType=TIMESTAMP}, 
+            #{loginTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.User">
+        update tb_user
+        <set>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=TINYINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="salt != null">
+                salt = #{salt,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null">
+                real_name = #{realName,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="avatarUrl != null">
+                avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=TINYINT},
+            </if>
+            <if test="verifyEmail != null">
+                verify_email = #{verifyEmail,jdbcType=TINYINT},
+            </if>
+            <if test="verifyMobile != null">
+                verify_mobile = #{verifyMobile,jdbcType=TINYINT},
+            </if>
+            <if test="ip != null">
+                ip = #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="createUser != null">
+                create_user = #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="liftBanTime != null">
+                lift_ban_time = #{liftBanTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loginTime != null">
+                login_time = #{loginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="getByMobile" resultType="User">
+        select * from tb_user WHERE mobile=#{mobile}
+    </select>
+
+
+    <select id="getByMobileAndUserType" resultType="User">
+        select * from tb_user WHERE mobile=#{mobile} and user_type=#{userType}
+    </select>
+
+    <!-- 手机号查找，用户状态放到业务逻辑中 -->
+    <select id="loginByMobileAndUserType" resultType="UserEx">
+        select ui.*, ri.id as role_id,ri.role_name,si.id as station_id,ci.audit_status
+        from tb_user ui
+        LEFT JOIN tb_role_user_ref ruref on ui.id=ruref.user_id
+        LEFT JOIN tb_role_info ri on ri.id=ruref.role_id
+        LEFT JOIN tb_station_user_ref suref on ui.id=suref.user_id
+        LEFT JOIN tb_station_info si on si.id=suref.id
+        LEFT JOIN tb_company_info ci on ci.id=si.company_id
+        WHERE ui.mobile=#{mobile} and ui.user_type in
+        <foreach collection="userTypes" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+        order by ui.create_time desc
+    </select>
+
+
+    <!-- 手机号查找，用户状态放到业务逻辑中 -->
+    <select id="loginByMobile" resultType="UserEx">
+        select ui.*, ri.id as role_id,ri.role_name,si.id as station_id,ci.audit_status
+        from tb_user ui
+        LEFT JOIN tb_role_user_ref ruref on ui.id=ruref.user_id
+        LEFT JOIN tb_role_info ri on ri.id=ruref.role_id
+        LEFT JOIN tb_station_user_ref suref on ui.id=suref.user_id
+        LEFT JOIN tb_station_info si on si.id=suref.id
+        LEFT JOIN tb_company_info ci on ci.id=si.company_id
+        WHERE ui.mobile=#{mobile}
+        order by ui.create_time desc
+    </select>
+
+
+
+    <select id="page"  resultType="UserEx">
+        select tu.*,tri.role_name,tri.id as role_id,tsi.id as station_id,tci.audit_status,tuwx.open_id
+        from tb_user tu
+        left join tb_role_user_ref tru on tru.user_id = tu.id
+        left join tb_role_info tri on tru.role_id = tri.id
+        left join tb_station_user_ref tsuref on tsuref.user_id=tu.id
+        left join tb_station_info tsi on tsi.id=tsuref.station_id
+        left join tb_company_info tci on tci.user_id=tu.id
+        left join tb_user_weixin tuwx on tuwx.user_id=tu.id
+        where 1=1
+
+        <if test="userType!=null">
+            AND tu.user_type =#{userType}
+        </if>
+
+        <if test="mobile!=null and mobile!=''">
+            AND tu.mobile LIKE CONCAT('%',#{mobile},'%')
+        </if>
+        <if test="nickName!=null and nickName!=''">
+            AND tu.nick_name LIKE CONCAT('%',#{nickName},'%')
+        </if>
+        ORDER BY  tu.create_time desc
+    </select>
+
+
+    <select id="generalPage" resultType="GeneralUserOut">
+        select tu.id,tu.nick_name,tu.mobile,tu.real_name,tri.role_name,tu.status
+        from tb_user tu
+        left join tb_role_user_ref tru on tru.user_id = tu.id
+        left join tb_role_info tri on tri.id = tru.role_id
+        where 1=1
+            <if test="userType!=null">
+                AND tu.user_type =#{userType}
+            </if>
+            <if test="nickName!=null and nickName!=''">
+                AND tu.nick_name LIKE CONCAT('%',#{nickName},'%')
+            </if>
+        ORDER BY  tu.create_time desc
+    </select>
+
+
+    <select id="generalCompanyUserPageList"  resultType="GeneralCompanyUserPageOut">
+        select tu.id,tu.mobile,tci.id as company_id,tci.audit_status,'' as audit_status_name,tuwx.open_id,
+        tu.avatar_url as user_avatar_url, tci.company_name,tci.manager_name,tci.commission_ration,tu.create_time
+        from tb_user tu
+        INNER JOIN tb_company_info tci on tci.user_id=tu.id
+        left join tb_user_weixin tuwx on tuwx.user_id=tu.id
+        where 1=1 and tu.user_type=2
+            <if test="companyName!=null and companyName!=''">
+                AND tci.company_name LIKE CONCAT('%',#{companyName},'%')
+            </if>
+
+            <if test="mobile!=null and mobile!=''">
+                AND tu.mobile LIKE CONCAT('%',#{mobile},'%')
+            </if>
+
+            <if test="managerName!=null and managerName!=''">
+                AND tci.manager_name LIKE CONCAT('%',#{managerName},'%')
+            </if>
+
+            <if test="auditStatus!=null">
+                AND tci.audit_status =#{auditStatus}
+            </if>
+
+        ORDER BY  tu.create_time desc
+    </select>
+
+
+    <delete id="deleteByIds">
+        delete from tb_user where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <!-- 查询车主信息 -->
+    <select id="carOwnerInfo" resultType="com.newlife.charge.core.dto.out.CarOwnerOut">
+        select
+        <include refid="Car_Owner_List"/>
+        from tb_user
+        where
+        user_type = #{userType, jdbcType=VARCHAR}
+        and id= #{id, jdbcType=INTEGER}
+    </select>
+
+    <!-- 修改用户信息 -->
+    <update id="updateCarOwner">
+        update tb_user
+        <set>
+            <if test="updateIn.gender != null ">
+                gender = #{updateIn.gender, jdbcType=INTEGER},
+            </if>
+            <if test="updateIn.avatarUrl != null and updateIn.avatarUrl != '' ">
+                avatar_url = #{updateIn.avatarUrl, jdbcType=VARCHAR},
+            </if>
+            <if test="updateIn.nickName != null and updateIn.nickName != '' ">
+                nick_name = #{updateIn.nickName, jdbcType=VARCHAR},
+            </if>
+            <if test="updateIn.mobile != null and updateIn.mobile != ''">
+                mobile = #{updateIn.mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="updateIn.email != null and updateIn.email != ''">
+                email = #{updateIn.email, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <!-- 修改用户性别 -->
+    <update id="updateGender">
+        update tb_user set gender = #{gender, jdbcType=INTEGER}
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <!-- 修改用户头像 -->
+    <update id="updateAvatarUrl">
+        update tb_user set avatar_url = #{avatarUrl, jdbcType=VARCHAR}
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <!-- 修改昵称 -->
+    <update id="updateNickName">
+        update tb_user set nick_name = #{nickName, jdbcType=VARCHAR}
+        where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <!-- 桩站后台 账号分页查询 -->
+    <select id="stationUserPage"  resultType="StationUserOut">
+        select tu.*,tri.role_name
+        from tb_role_user_ref tru
+        left join tb_user tu on tru.user_id = tu.id
+        left join tb_role_info tri on tru.role_id = tri.id
+        <where>
+            <if test="userType!=null">
+                AND tu.user_type =#{userType}
+            </if>
+            <if test="stationId!=null">
+                AND tri.station_id =#{stationId}
+            </if>
+            <if test="mobile!=null and mobile!=''">
+                AND tu.mobile LIKE CONCAT('%',#{mobile},'%')
+            </if>
+            ORDER BY  tu.create_time desc
+        </where>
+    </select>
+
+    <select id="getStationUserByQuery"  resultType="UserEx">
+        select tu.*,tri.station_id
+        from tb_role_user_ref tru
+        left join tb_user tu on tru.user_id = tu.id
+        left join tb_role_info tri on tru.role_id = tri.id
+        <where>
+            <if test="userType!=null">
+                AND tu.user_type =#{userType}
+            </if>
+            <if test="stationId!=null">
+                AND tri.station_id =#{stationId}
+            </if>
+            <if test="userName!=null and userName!=''">
+                AND tu.user_name = #{userName}
+            </if>
+        </where>
+    </select>
+
+    <select id="stationUserInfo" resultType="StationUserOut">
+        select tu.id,tu.nick_name,tu.mobile,tu.real_name,tri.role_name,tri.id as roleId
+        from tb_user tu
+        left join tb_role_user_ref tru on tru.user_id = tu.id
+        left join tb_role_info tri on tru.role_id = tri.id
+        where tu.id = #{userId,jdbcType=INTEGER} AND tri.station_id =#{stationId}
+    </select>
+</mapper>

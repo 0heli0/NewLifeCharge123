@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.CouponStationRefMapper">
+
+    <sql id="Base_Column_List">
+        id, coupon_id, station_id, create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.CouponStationRef">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_coupon_station_ref
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from tb_coupon_station_ref
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.CouponStationRef">
+        insert into tb_coupon_station_ref (coupon_id, station_id,
+            create_time)
+        values (#{couponId,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER},
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.newlife.charge.core.domain.CouponStationRef">
+        update tb_coupon_station_ref
+        <set>
+            <if test="couponId != null">
+                coupon_id = #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 批量添加 -->
+    <insert id="batchInsert" useGeneratedKeys="true" keyProperty="id" >
+        insert into tb_coupon_station_ref (coupon_id, station_id,
+        create_time)
+        values
+        <foreach collection="list" index="index" item="item" separator="," >
+            (#{item.couponId,jdbcType=INTEGER}, #{item.stationId,jdbcType=INTEGER},
+            #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!-- 根据体验券id查询 -->
+    <select id="getByCouponId" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.CouponStationRef">
+        select
+        <include refid="Base_Column_List" />
+        from tb_coupon_station_ref
+        where coupon_id = #{couponId,jdbcType=INTEGER}
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByIds">
+        delete from tb_coupon_station_ref
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getByCouponIds" resultType="com.newlife.charge.core.domain.CouponStationRef">
+        select 
+        <include refid="Base_Column_List"/>
+        from tb_coupon_station_ref
+        where coupon_id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

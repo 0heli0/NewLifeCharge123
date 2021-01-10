@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.WriteInvoiceLogMapper">
+
+    <sql id="Base_Column_List">
+        id, user_id, invoice_Sn, amount, status, receiver_address, express_company_type, 
+        express_no, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.WriteInvoiceLog">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_write_invoice_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_write_invoice_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.WriteInvoiceLog">
+        insert into tb_write_invoice_log (id, user_id, invoice_Sn, 
+            amount, status, receiver_address, 
+            express_company_type, express_no, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{invoiceSn,jdbcType=VARCHAR}, 
+            #{amount,jdbcType=DECIMAL}, #{status,jdbcType=TINYINT}, #{receiverAddress,jdbcType=VARCHAR}, 
+            #{expressCompanyType,jdbcType=TINYINT}, #{expressNo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.WriteInvoiceLog">
+        update tb_write_invoice_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="invoiceSn != null">
+                invoice_Sn = #{invoiceSn,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="receiverAddress != null">
+                receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="expressCompanyType != null">
+                express_company_type = #{expressCompanyType,jdbcType=TINYINT},
+            </if>
+            <if test="expressNo != null">
+                express_no = #{expressNo,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

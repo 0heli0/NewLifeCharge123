@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.ChargeLogMapper">
+
+    <sql id="Base_Column_List">
+        id, user_id,order_id, order_sn, station_id, station_name, client_id,client_code, client_charge_type,
+        parking_lot_id, parking_lot_code,client_gun_id,client_gun_code, begin_time, end_time, degree_predict, degree_real,
+        user_coupon_id, price_coupon, charge_price,charge_prices,service_price, price_real, vehicle_type, plate_number,
+        status, stop_type, create_time
+    </sql>
+
+
+    <sql id="Base_Column_List_Alias">
+        t1.id,t1.user_id, t1.order_id, t1.order_sn, t1.station_id, t1.station_name, t1.client_id,t1.client_code, t1.client_charge_type,
+        t1.parking_lot_id, t1.parking_lot_code,t1.client_gun_id,t1.client_gun_code, t1.begin_time, t1.end_time,
+        t1.degree_predict, t1.degree_real,
+        t1.user_coupon_id, t1.price_coupon, t1.charge_price,t1.charge_prices,t1.service_price, t1.price_real, t1.vehicle_type, t1.plate_number,
+        t1.status, t1.stop_type, t1.create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.ChargeLog">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_charge_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_charge_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.ChargeLog">
+        insert into tb_charge_log (id,user_id, order_id, order_sn,
+            station_id, station_name, client_id, client_code,
+            client_charge_type, parking_lot_id, parking_lot_code,
+            client_gun_id,client_gun_code,
+            begin_time, end_time, degree_predict,
+            degree_real, user_coupon_id, price_coupon, 
+            charge_price,charge_prices, service_price,price_real, vehicle_type,
+            plate_number, status, stop_type, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},#{orderId,jdbcType=INTEGER}, #{orderSn,jdbcType=VARCHAR},
+            #{stationId,jdbcType=INTEGER}, #{stationName,jdbcType=VARCHAR}, #{clientId,jdbcType=INTEGER},
+            #{clientCode,jdbcType=VARCHAR},
+            #{clientChargeType,jdbcType=TINYINT}, #{parkingLotId,jdbcType=INTEGER}, #{parkingLotCode,jdbcType=VARCHAR},
+            #{clientGunId,jdbcType=INTEGER}, #{clientGunCode,jdbcType=VARCHAR},
+            #{beginTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{degreePredict,jdbcType=DECIMAL}, 
+            #{degreeReal,jdbcType=DECIMAL}, #{userCouponId,jdbcType=INTEGER}, #{priceCoupon,jdbcType=DECIMAL}, 
+            #{chargePrice,jdbcType=DECIMAL},  #{chargePrices,jdbcType=VARCHAR}, #{servicePrice,jdbcType=DECIMAL}, #{priceReal,jdbcType=DECIMAL}, #{vehicleType,jdbcType=VARCHAR},
+            #{plateNumber,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{stopType,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.ChargeLog">
+        update tb_charge_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
+            </if>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="stationName != null">
+                station_name = #{stationName,jdbcType=VARCHAR},
+            </if>
+            <if test="clientId != null">
+                client_id = #{clientId,jdbcType=INTEGER},
+            </if>
+            <if test="clientCode != null">
+                client_code = #{clientCode,jdbcType=VARCHAR},
+            </if>
+            <if test="clientChargeType != null">
+                client_charge_type = #{clientChargeType,jdbcType=TINYINT},
+            </if>
+            <if test="parkingLotId != null">
+                parking_lot_id = #{parkingLotId,jdbcType=INTEGER},
+            </if>
+            <if test="parkingLotCode != null">
+                parking_lot_code = #{parkingLotCode,jdbcType=VARCHAR},
+            </if>
+            <if test="clientGunId != null">
+                client_gun_id = #{clientGunId,jdbcType=INTEGER},
+            </if>
+            <if test="clientGunCode != null">
+                client_gun_code = #{clientGunCode,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="degreePredict != null">
+                degree_predict = #{degreePredict,jdbcType=DECIMAL},
+            </if>
+            <if test="degreeReal != null">
+                degree_real = #{degreeReal,jdbcType=DECIMAL},
+            </if>
+            <if test="userCouponId != null">
+                user_coupon_id = #{userCouponId,jdbcType=INTEGER},
+            </if>
+            <if test="priceCoupon != null">
+                price_coupon = #{priceCoupon,jdbcType=DECIMAL},
+            </if>
+            <if test="chargePrice != null">
+                charge_price = #{chargePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="chargePrices != null">
+                charge_prices = #{chargePrices,jdbcType=VARCHAR},
+            </if>
+            <if test="servicePrice != null">
+                service_price = #{servicePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="priceReal != null">
+                price_real = #{priceReal,jdbcType=DECIMAL},
+            </if>
+            <if test="vehicleType != null">
+                vehicle_type = #{vehicleType,jdbcType=VARCHAR},
+            </if>
+            <if test="plateNumber != null">
+                plate_number = #{plateNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="stopType != null">
+                stop_type = #{stopType,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <!--总后台桩站资金统计-卖电流水列表-->
+    <!--使用订单编号当资金流水号-->
+    <select id="stationPage" resultType="com.newlife.charge.core.dto.out.GeneralStationSpendLogPageOut">
+        select
+        t1.id,t1.order_sn as money_sn,t1.station_name,tu.mobile as user_mobile,tci.company_name,
+        41 as type,'卖电流水' as type_name,41 as type_remark,'桩站订单' as type_remark_name,
+        t1.price_real as amount,t1.create_time
+        from  tb_charge_log t1
+        left join tb_user tu on tu.id = t1.user_id
+        LEFT JOIN tb_station_info tsi on tsi.id=t1.station_id
+        left join tb_station_detail tsd on tsd.station_id=t1.station_id
+        LEFT JOIN tb_company_info tci on tci.id=tsi.company_id
+        <where>
+            <if test="userMobile!=null and userMobile!=''">
+                and tu.mobile like CONCAT('%',#{userMobile},'%')
+            </if>
+            <if test="stationName!=null and stationName!=''">
+                and t1.station_name like CONCAT('%',#{stationName},'%')
+            </if>
+            <if test="companyName!=null and companyName!=''">
+                and tci.company_name like CONCAT('%',#{companyName},'%')
+            </if>
+            <if test="startTime!=null">
+                and t1.create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and t1.create_time &lt;= #{endTime}
+            </if>
+        </where>
+
+        order by id desc
+    </select>
+
+
+    <!--总后台桩站资金统计-卖电流水详情-->
+    <select id="getStationChargeInfo" resultType="com.newlife.charge.core.dto.out.StationChargeOut">
+        select
+        t1.id,t1.order_sn ,t1.station_name, 41 as type,'卖电流水' as type_name,41 as type_remark,'桩站订单' as type_remark_name,
+        t1.station_id,t1.station_name,'' as station_user_mobile,
+        tu.mobile as user_mobile,tci.company_name,t1.client_gun_code as station_client_gun_code,
+        t1.parking_lot_code as station_parking_lot_code,t1.client_code as station_client_code,
+        t1.client_charge_type ,'' as client_charge_type_name, t1.charge_prices,t1.service_price,
+        t1.begin_time,t1.end_time,'' as charging_time,t1.degree_real,(t1.price_real+t1.price_coupon )as amount,
+        t1.price_coupon as coupon_price,'' as rate,t1.price_real,tu.mobile as user_mobile,t1.create_time
+
+        from  tb_charge_log t1
+        left join tb_user tu on tu.id = t1.user_id
+        LEFT JOIN tb_station_info tsi on tsi.id=t1.station_id
+        left join tb_station_detail tsd on tsd.station_id=t1.station_id
+
+        LEFT JOIN tb_company_info tci on tci.id=tsi.company_id
+        <where>
+            <if test="id!=null">
+                and t1.id = #{id}
+            </if>
+        </where>
+
+        order by id desc
+    </select>
+
+    <select id="getDayChargeLog"  resultType="com.newlife.charge.core.dto.out.StationChargeOut">
+        select *
+        from tb_charge_log
+        <where>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="dateTime != null">
+                and DATE_FORMAT(create_time,'%Y-%m-%d') = #{dateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        order by create_time desc
+        <if test="limitNo != null">
+            limit #{limitNo}
+        </if>
+
+    </select>
+
+    <select id="page"  resultType="com.newlife.charge.core.domain.ChargeLog">
+        select *
+        from tb_charge_log
+        <where>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="startTime!=null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="clientChargeType!=null">
+                and client_charge_type = #{clientChargeType}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="getInfo" resultType="com.newlife.charge.core.domain.exModel.ChargeLogEx">
+        select cl.*,spl.code
+        from tb_charge_log cl
+        left join tb_station_parking_lot spl on cl.parking_lot_id = spl.id
+        where cl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByOrderSn" parameterType="java.lang.String"
+            resultType="com.newlife.charge.core.domain.ChargeLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_charge_log
+        where order_sn = #{orderSn,jdbcType=VARCHAR}
+        order by create_time DESC
+        limit 1
+    </select>
+
+    <select id="getByUserId" parameterType="java.lang.Integer"
+            resultType="com.newlife.charge.core.domain.ChargeLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_charge_log
+        where user_id = #{userId,jdbcType=INTEGER}
+        order by create_time DESC
+        limit 1
+    </select>
+
+    <select id="getByParams" resultType="com.newlife.charge.core.domain.ChargeLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_charge_log
+        <where>
+            <if test="userId != null">
+             and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="orderSn != null">
+                and order_sn = #{orderSn,jdbcType=VARCHAR}
+            </if>
+            <if test="orderId != null">
+                and order_in = #{orderId,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by create_time DESC
+    </select>
+
+    <select id="getInfoByParams" resultType="com.newlife.charge.core.domain.ChargeLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_charge_log
+        <where>
+            <if test="userId != null">
+             and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="gunId != null">
+                and client_gun_id = #{gunId,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+        </where>
+        order by create_time DESC
+        limit 1
+    </select>
+
+    <select id="getByMobile" parameterType="java.lang.String"
+            resultType="com.newlife.charge.core.domain.ChargeLog">
+      SELECT log.* FROM tb_charge_log log
+        JOIN tb_user user ON user.id = log.user_id
+        WHERE user.mobile = #{mobile, jdbcType=VARCHAR}
+        AND  log.`status` = 1
+        ORDER BY log.create_time DESC
+        limit 1;
+    </select>
+</mapper>

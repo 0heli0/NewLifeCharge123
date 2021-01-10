@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.ClientHistoryDataMapper">
+
+    <sql id="Base_Column_List">
+        id, station_client_code, gun_code, charge_way, charge_mode, charge_card_type, charge_card_no, 
+        car_vin, babe, charge_voltage, charge_electricity, charge_time, charge_amount, charge_energy, 
+        charge_energy_start, charge_energy_end, left_time, current_soc, upload_master, pay, 
+        charge_end_reason, charge_time_start, charge_time_end, record_no, record_storage_no, 
+        create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.ClientHistoryData">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_client_history_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByParams"  resultType="com.newlife.charge.core.domain.ClientHistoryData">
+        select
+        <include refid="Base_Column_List" />
+        from tb_client_history_data
+        <where>
+            <if test="stationClientCode!=null and stationClientCode!=''">
+                and station_client_code=#{stationClientCode}
+            </if>
+            <if test="recordNo!=null ">
+                and record_no=#{recordNo}
+            </if>
+            <if test="recordStorageNo!=null ">
+                and record_storage_no=#{recordStorageNo}
+            </if>
+        </where>
+    </select>
+
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_client_history_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.ClientHistoryData">
+        insert into tb_client_history_data (id, station_client_code, gun_code, 
+            charge_way, charge_mode, charge_card_type, 
+            charge_card_no, car_vin, babe, 
+            charge_voltage, charge_electricity, charge_time, 
+            charge_amount, charge_energy, charge_energy_start, 
+            charge_energy_end, left_time, current_soc, 
+            upload_master, pay, charge_end_reason, 
+            charge_time_start, charge_time_end, record_no, 
+            record_storage_no, create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationClientCode,jdbcType=VARCHAR}, #{gunCode,jdbcType=VARCHAR}, 
+            #{chargeWay,jdbcType=TINYINT}, #{chargeMode,jdbcType=TINYINT}, #{chargeCardType,jdbcType=TINYINT}, 
+            #{chargeCardNo,jdbcType=VARCHAR}, #{carVin,jdbcType=VARCHAR}, #{babe,jdbcType=VARCHAR}, 
+            #{chargeVoltage,jdbcType=VARCHAR}, #{chargeElectricity,jdbcType=VARCHAR}, #{chargeTime,jdbcType=VARCHAR}, 
+            #{chargeAmount,jdbcType=VARCHAR}, #{chargeEnergy,jdbcType=VARCHAR}, #{chargeEnergyStart,jdbcType=VARCHAR}, 
+            #{chargeEnergyEnd,jdbcType=VARCHAR}, #{leftTime,jdbcType=VARCHAR}, #{currentSoc,jdbcType=VARCHAR}, 
+            #{uploadMaster,jdbcType=TINYINT}, #{pay,jdbcType=TINYINT}, #{chargeEndReason,jdbcType=TINYINT}, 
+            #{chargeTimeStart,jdbcType=TIMESTAMP}, #{chargeTimeEnd,jdbcType=TIMESTAMP}, #{recordNo,jdbcType=INTEGER}, 
+            #{recordStorageNo,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.ClientHistoryData">
+        update tb_client_history_data
+        <set>
+            <if test="stationClientCode != null">
+                station_client_code = #{stationClientCode,jdbcType=VARCHAR},
+            </if>
+            <if test="gunCode != null">
+                gun_code = #{gunCode,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeWay != null">
+                charge_way = #{chargeWay,jdbcType=TINYINT},
+            </if>
+            <if test="chargeMode != null">
+                charge_mode = #{chargeMode,jdbcType=TINYINT},
+            </if>
+            <if test="chargeCardType != null">
+                charge_card_type = #{chargeCardType,jdbcType=TINYINT},
+            </if>
+            <if test="chargeCardNo != null">
+                charge_card_no = #{chargeCardNo,jdbcType=VARCHAR},
+            </if>
+            <if test="carVin != null">
+                car_vin = #{carVin,jdbcType=VARCHAR},
+            </if>
+            <if test="babe != null">
+                babe = #{babe,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeVoltage != null">
+                charge_voltage = #{chargeVoltage,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeElectricity != null">
+                charge_electricity = #{chargeElectricity,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeTime != null">
+                charge_time = #{chargeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeAmount != null">
+                charge_amount = #{chargeAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeEnergy != null">
+                charge_energy = #{chargeEnergy,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeEnergyStart != null">
+                charge_energy_start = #{chargeEnergyStart,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeEnergyEnd != null">
+                charge_energy_end = #{chargeEnergyEnd,jdbcType=VARCHAR},
+            </if>
+            <if test="leftTime != null">
+                left_time = #{leftTime,jdbcType=VARCHAR},
+            </if>
+            <if test="currentSoc != null">
+                current_soc = #{currentSoc,jdbcType=VARCHAR},
+            </if>
+            <if test="uploadMaster != null">
+                upload_master = #{uploadMaster,jdbcType=TINYINT},
+            </if>
+            <if test="pay != null">
+                pay = #{pay,jdbcType=TINYINT},
+            </if>
+            <if test="chargeEndReason != null">
+                charge_end_reason = #{chargeEndReason,jdbcType=TINYINT},
+            </if>
+            <if test="chargeTimeStart != null">
+                charge_time_start = #{chargeTimeStart,jdbcType=TIMESTAMP},
+            </if>
+            <if test="chargeTimeEnd != null">
+                charge_time_end = #{chargeTimeEnd,jdbcType=TIMESTAMP},
+            </if>
+            <if test="recordNo != null">
+                record_no = #{recordNo,jdbcType=INTEGER},
+            </if>
+            <if test="recordStorageNo != null">
+                record_storage_no = #{recordStorageNo,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

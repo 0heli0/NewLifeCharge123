@@ -1,0 +1,9 @@
+
+
+1.外网测试环境配置：七牛6号
+    接口-代码：     /usr/local/tomcat/api_test_newlife-charge
+    前端-总后台:   /usr/local/tomcat/vue_test_general_newlife-charge
+    前端-桩站web:  /usr/local/tomcat/vue_test_station_newlife-charge
+    接口（https）-nginx配置文件： /usr/local/nginx/conf/mseenet/test.api.newlife.charge.conf
+    总后台-nginx配置文件： /usr/local/nginx/conf/mseenet/test.general.newlife.charge.conf
+    桩站web-nginx配置文件： /usr/local/nginx/conf/mseenet/test.station.newlife.charge.conf

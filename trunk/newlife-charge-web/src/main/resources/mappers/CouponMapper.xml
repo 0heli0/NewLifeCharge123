@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.CouponMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, type, scope_type, price, threshold_price, total_number, limit_number, left_number,
+        status, collect_start_time, collect_end_time, use_start_time, use_end_time, create_time
+    </sql>
+    <sql id="Base_Column_List_Coupon">
+        coupon.id, coupon.station_id, coupon.type, coupon.scope_type, coupon.price, coupon.threshold_price, coupon.total_number,
+         coupon.limit_number, coupon.left_number,coupon.status, coupon.collect_start_time, coupon.collect_end_time,
+         coupon.use_start_time, coupon.use_end_time, coupon.create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.Coupon">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_coupon
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_coupon
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.Coupon">
+        insert into tb_coupon (station_id, type,scope_type,
+            price, threshold_price, total_number, 
+            limit_number, left_number, status, 
+            collect_start_time, collect_end_time, 
+            use_start_time, use_end_time, create_time
+            )
+        values (#{stationId,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, #{scopeType,jdbcType=TINYINT},
+            #{price,jdbcType=DECIMAL}, #{thresholdPrice,jdbcType=DECIMAL}, #{totalNumber,jdbcType=INTEGER}, 
+            #{limitNumber,jdbcType=INTEGER}, #{leftNumber,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+            #{collectStartTime,jdbcType=TIMESTAMP}, #{collectEndTime,jdbcType=TIMESTAMP}, 
+            #{useStartTime,jdbcType=TIMESTAMP}, #{useEndTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.Coupon">
+        update tb_coupon
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DECIMAL},
+            </if>
+            <if test="thresholdPrice != null">
+                threshold_price = #{thresholdPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="totalNumber != null">
+                total_number = #{totalNumber,jdbcType=INTEGER},
+            </if>
+            <if test="limitNumber != null">
+                limit_number = #{limitNumber,jdbcType=INTEGER},
+            </if>
+            <if test="leftNumber != null">
+                left_number = #{leftNumber,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="collectStartTime != null">
+                collect_start_time = #{collectStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="collectEndTime != null">
+                collect_end_time = #{collectEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="useStartTime != null">
+                use_start_time = #{useStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="useEndTime != null">
+                use_end_time = #{useEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 查询优惠券列表 -->
+    <select id="page" parameterType="com.newlife.charge.core.dto.in.CouponQueryIn" resultType="com.newlife.charge.core.dto.out.CouponOut">
+        select
+        <include refid="Base_Column_List_Coupon"/>
+            ,
+        GROUP_CONCAT(station_detail.name separator ',') as station_name
+      from tb_coupon coupon
+        left join tb_coupon_station_ref ref on ref.coupon_id = coupon.id
+        left join tb_station_detail station_detail on station_detail.station_id = ref.station_id
+        <where>
+          and coupon.status != 2
+          <if test="query.addUser != null and query.addUser==1 ">
+            and coupon.station_id = 0
+          </if>
+          <if test="query.addUser != null and query.addUser==2 ">
+            and coupon.station_id != 0
+          </if>
+          <if test="query.type != null and query.type != 0 ">
+            and coupon.type = #{query.type, jdbcType=INTEGER}
+          </if>
+          <if test="query.status != null and query.status == 1">
+              and (coupon.status = 0 and coupon.use_end_time &gt;= now())
+          </if>
+          <if test="query.status != null and query.status == 2">
+              and (coupon.status = 1 and coupon.use_end_time &lt;= now())
+          </if>
+          <if test="query.stationName != null and query.stationName != '' ">
+              and (station_detail.name like CONCAT('%',#{query.stationName, jdbcType=VARCHAR},'%')
+                    or coupon.scope_type = 0 )
+          </if>
+        </where>
+        group by coupon.id
+        <if test="query.stationName != null and query.stationName != ''">
+            HAVING LOCATE(#{query.stationName, jdbcType=VARCHAR},station_name) or  station_name is null
+        </if>
+        order by coupon.create_time desc
+    </select>
+
+    <!-- 桩站查询优惠券列表 -->
+    <select id="pageList" resultType="com.newlife.charge.core.dto.out.CouponOut">
+        select *
+        from tb_coupon coupon
+        <where>
+            <if test="stationId != null">
+                and coupon.station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and coupon.status = #{status, jdbcType=INTEGER}
+            </if>
+        </where>
+        order by coupon.create_time desc
+    </select>
+
+    <!-- 下架 -->
+    <update id="out" parameterType="java.lang.Integer">
+      update tb_coupon
+      <set>
+          collect_end_time = now()
+      </set>
+      <where>
+          id = #{id, jdbcType=INTEGER}
+      </where>
+    </update>
+
+    <delete id="deleteById">
+      delete from tb_coupon where id = #{id, jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteByIds">
+        delete from tb_coupon
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- 获取过期优惠券的id  -->
+    <select id="getOverdueCoupon" resultType="java.lang.Integer">
+        select id from tb_coupon
+        where status = 0
+        and use_end_time &lt; now()
+    </select>
+    <!-- 过id将过期数据修改成过期状态 -->
+    <update id="setOverdueCoupon">
+        update tb_coupon set status = 1
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </update>
+
+    <select id="info" resultType="com.newlife.charge.core.dto.out.CouponOut">
+        select c.*,sd.name as stationName from tb_coupon c
+        left join tb_station_detail sd on c.station_id = sd.station_id
+        where c.id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="getByParams" parameterType="com.newlife.charge.core.domain.Coupon" resultType="com.newlife.charge.core.domain.Coupon">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_coupon
+        <where>
+        and status = 0
+            <if test="stationId != null">
+                and  station_id = #{stationId, jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                and  type = #{type, jdbcType=INTEGER}
+            </if>
+            <if test="scopeType != null">
+                and  scope_type = #{scopeType, jdbcType=INTEGER}
+            </if>
+            <if test="price != null">
+                and price = #{price, jdbcType=DECIMAL}
+            </if>
+            <if test="thresholdPrice != null">
+                and threshold_price = #{thresholdPrice, jdbcType=DECIMAL}
+            </if>
+            <if test="collectStartTime != null">
+                and collect_start_time = #{collectStartTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="collectEndTime != null">
+                and collect_end_time = #{collectEndTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="useStartTime != null">
+                and use_start_time = #{useStartTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="useEndTime != null">
+                and use_end_time = #{useEndTime, jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <select id="getByQuery"  resultType="com.newlife.charge.core.domain.Coupon">
+        select *
+        from tb_coupon
+        <where>
+            <if test="price != null">
+                and price = #{price, jdbcType=DECIMAL}
+            </if>
+            <if test="type != null">
+                and type = #{type, jdbcType=INTEGER}
+            </if>
+            <if test="scopeType != null">
+                and scope_type = #{scopeType, jdbcType=INTEGER}
+            </if>
+            <if test="thresholdPrice != null">
+                and threshold_price = #{thresholdPrice,jdbcType=DECIMAL}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+
+        </where>
+
+    </select>
+
+    <select id="getStationNames" parameterType="java.lang.Integer" resultType="java.lang.String">
+      select GROUP_CONCAT(detail.NAME SEPARATOR ',' ) AS station_name
+       from tb_coupon_station_ref  ref
+       join tb_station_detail detail on ref.station_id = detail.station_id
+       where ref.coupon_id = #{couponId, jdbcType=INTEGER}
+    </select>
+
+    <select id="getOverdueUserCoupon" resultType="java.lang.Integer">
+        SELECT uc.id FROM tb_user_coupon uc
+        JOIN tb_coupon co ON co.id = uc.coupon_id and co.use_end_time &lt; NOW()
+        WHERE uc.`status` = 0;
+    </select>
+</mapper>

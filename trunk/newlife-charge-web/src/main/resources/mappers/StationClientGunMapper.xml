@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationClientGunMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, station_parking_lot_id, station_client_id, code,gun_no, status,
+        voltage,electric,power,temperature,percentage,charge_time,charge_energy,charge_amount,create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationClientGun">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_client_gun
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countByStationId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_client_gun  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        where t1.station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countByCompanyId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1)
+        from tb_station_client_gun  t1
+        inner join tb_station_info tsi on tsi.id=t1.station_id
+        inner join tb_company_info tci on tci.id=tsi.company_id
+        where tci.id = #{companyId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getInfoByStationClientId" resultType="com.newlife.charge.core.domain.StationClientGun">
+        select  id,code
+        from tb_station_client_gun
+        where station_client_id = #{stationClientId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getByStationParkingLotId" resultType="com.newlife.charge.core.domain.StationClientGun">
+        select  id,code
+        from tb_station_client_gun
+        where station_parking_lot_id = #{stationParkingLotId,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getInfoByParams" resultType="com.newlife.charge.core.domain.exModel.StationClientGunEx">
+        select tsd.name as station_name ,tsc.code as station_client_code,  tspl.code as station_parking_lot_code,
+        tscg.id, tscg.station_id, tscg.station_parking_lot_id, tscg.station_client_id, tscg.code,tscg.gun_no,tscg.status, tscg.create_time
+
+        from tb_station_client_gun tscg
+        LEFT JOIN  tb_station_detail  tsd on tsd.station_id=tscg.station_id
+        LEFT JOIN  tb_station_client  tsc on tsc.id = tscg.station_client_id
+        LEFT JOIN  tb_station_parking_lot tspl on tspl.id=tscg.station_parking_lot_id
+        where 1=1
+        <if test="id!=null">
+           and  tscg.id = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="code!=null and code!=''">
+            and tscg.code like  CONCAT('%',#{code,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="stationParkingLotCode!=null and code!=''">
+            and tspl.code like  CONCAT('%',#{stationParkingLotCode,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="status!=null">
+            and tscg.status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="stationClientId!=null">
+            and tsc.id = #{stationClientId,jdbcType=INTEGER}
+        </if>
+        <if test="gunNo!=null">
+            and tscg.gun_no = #{gunNo,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_client_gun
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert"     useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationClientGun">
+        insert into tb_station_client_gun (id, station_id, station_parking_lot_id,
+            station_client_id, code,gun_no, status ,voltage,electric,power,temperature,percentage,
+            charge_time,charge_energy,charge_amount,
+
+            create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{stationParkingLotId,jdbcType=INTEGER},
+            #{stationClientId,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR},#{gunNo,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+            #{voltage,jdbcType=VARCHAR},#{electric,jdbcType=VARCHAR},#{power,jdbcType=VARCHAR},#{temperature,jdbcType=VARCHAR},#{percentage,jdbcType=VARCHAR},
+            #{chargeTime,jdbcType=VARCHAR},#{chargeEnergy,jdbcType=VARCHAR},#{chargeAmount,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationClientGun">
+        update tb_station_client_gun
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="stationParkingLotId != null">
+                station_parking_lot_id = #{stationParkingLotId,jdbcType=INTEGER},
+            </if>
+            <if test="stationClientId != null">
+                station_client_id = #{stationClientId,jdbcType=INTEGER},
+            </if>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="gunNo != null">
+                gun_no = #{gunNo,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="voltage != null">
+                voltage = #{voltage,jdbcType=VARCHAR},
+            </if>
+            <if test="electric != null">
+                electric = #{electric,jdbcType=VARCHAR},
+            </if>
+            <if test="power != null">
+                power = #{power,jdbcType=VARCHAR},
+            </if>
+            <if test="temperature != null">
+                temperature = #{temperature,jdbcType=VARCHAR},
+            </if>
+            <if test="percentage != null">
+                percentage = #{percentage,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeTime != null">
+                charge_time = #{chargeTime,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeEnergy != null">
+                charge_energy = #{chargeEnergy,jdbcType=VARCHAR},
+            </if>
+            <if test="chargeAmount != null">
+                charge_amount = #{chargeAmount,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+
+    <update id="updateStatus" parameterType="com.newlife.charge.core.domain.StationClientGun">
+        update tb_station_client_gun
+        set `status`=#{status}
+        where station_client_id in
+        <foreach collection="stationClientIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </update>
+
+    <select id="page" resultType="com.newlife.charge.core.dto.out.StationClientGunInfoOut">
+        select tscg.id, tscg.code,  tscg.station_id, tsd.name as station_name , tspl.code as station_parking_lot_code,
+        tsc.code as station_client_code,tscg.gun_no, tscg.status, tscg.create_time
+        ,tscg.voltage,tscg.electric,tscg.power,tscg.temperature,tscg.percentage
+        from tb_station_client_gun tscg
+        LEFT JOIN  tb_station_detail  tsd on tsd.station_id=tscg.station_id
+        LEFT JOIN  tb_station_client  tsc on tsc.id=tscg.station_client_id
+        LEFT JOIN  tb_station_parking_lot tspl on tspl.id=tscg.station_parking_lot_id
+        where 1=1
+        <if test="code!=null and code!=''">
+            and tscg.code like  CONCAT('%',#{code,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="stationName!=null and stationName!=''">
+            and tsd.name like  CONCAT('%',#{stationName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="stationId!=null">
+            and tsd.station_id = #{stationId,jdbcType=INTEGER}
+        </if>
+        <if test="stationParkingLotCode!=null and stationParkingLotCode!=''">
+            and tspl.code like  CONCAT('%',#{stationParkingLotCode,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="status!=null">
+            and tscg.status = #{status,jdbcType=INTEGER}
+        </if>
+        order by tscg.id desc
+
+    </select>
+
+
+    <select id="simpleInfoList" resultType="com.newlife.charge.core.dto.out.StationClientGunInfoSimpleOut">
+        select tscg.code, tscg.status
+        from tb_station_client_gun tscg
+        LEFT JOIN  tb_station_detail  tsd on tsd.station_id=tscg.station_id
+        where 1=1
+        <if test="stationId!=null">
+            and tsd.station_id = #{stationId,jdbcType=INTEGER}
+        </if>
+        order by tscg.id desc
+
+    </select>
+
+
+
+    <delete id="deleteByIds">
+        delete from tb_station_client_gun where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <select id="getCountGroupByType" resultType="com.newlife.charge.core.domain.StationGunStatistics">
+        SELECT client.charge_type,count(0) AS total FROM tb_station_client_gun gun
+        JOIN tb_station_client  client ON client.station_id = gun.station_id and gun.station_client_id = client.id
+        JOIN tb_station_info info ON info.id = gun.station_id
+        JOIN tb_station_parking_lot lot ON lot.id = gun.station_parking_lot_id
+        WHERE client.station_id = #{stationId,jdbcType=INTEGER}
+        GROUP BY client.charge_type;
+    </select>
+    
+    <select id="getFreeGunByStationId" resultType="com.newlife.charge.core.domain.StationGunStatistics">
+        SELECT client.charge_type FROM tb_station_client_gun gun
+        JOIN tb_station_client client ON client.station_id = gun.station_id and gun.station_client_id = client.id
+        JOIN tb_station_info info ON info.id = gun.station_id
+        JOIN tb_station_parking_lot lot ON lot.id = gun.station_parking_lot_id AND lot.`status` = 0
+        WHERE gun.station_id = #{stationId,jdbcType=INTEGER}
+        AND gun.`status` = #{status,jdbcType=INTEGER};
+    </select>
+
+
+    <select id="getGunStatusStatistics" resultType="com.newlife.charge.core.dto.out.GunStatusStatisticsOut">
+        select
+            sum(case type  when 'all_total_count' then total else 0 end) as all_total_count,
+            sum(case type  when 'offline_total_count' then total else 0 end) as offline_total_count,
+            sum(case type  when 'free_total_count' then total else 0 end) as free_total_count,
+            sum(case type  when 'linking_total_count' then total else 0 end) as linking_total_count,
+            sum(case type  when 'charging_total_count' then total else 0 end) as charging_total_count,
+            sum(case type  when 'booked_total_count' then total else 0 end) as booked_total_count,
+            sum(case type  when 'line_total_count' then total else 0 end) as line_total_count
+        from  (
+            select 'all_total_count' as type ,count(1) as total from tb_station_client_gun
+                where 1=1
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'offline_total_count' as type,count(1) as total from tb_station_client_gun
+                where status=1
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'free_total_count' as type ,count(1) as total  from tb_station_client_gun
+                where status=2
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'linking_total_count' as type ,count(1) as total from tb_station_client_gun
+                where status=3
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'charging_total_count' as type,count(1) as total from tb_station_client_gun
+                where status=4
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'booked_total_count' as type,count(1) as total from tb_station_client_gun
+                where status=5
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+            union all
+            select 'line_total_count' as type,count(1) as total from tb_station_client_gun
+                where status=6
+                <if test="stationId!=null">
+                    and station_id=#{stationId}
+                </if>
+          ) tb1
+    </select>
+
+    <select id="getStationGunAddressDetail" parameterType="java.lang.Integer"
+            resultType="com.newlife.charge.core.dto.out.StationGunAddressDetail">
+        SELECT
+        gun.station_id,
+        gun.id AS gun_id,
+        client.id AS client_id,
+        client.`code` AS client_code,
+        gun.`code` AS gun_code,
+        lot.code AS lot_code,
+        lot.id AS lot_id,
+        detail.name AS station_name,
+        detail.address,
+        detail.lat,
+        detail.lng
+        FROM `tb_station_client_gun` gun
+        JOIN tb_station_client client ON gun.station_client_id = client.id
+        JOIN tb_station_detail detail ON detail.station_id = client.station_id
+        left JOIN tb_station_parking_lot lot on lot.id = gun.station_parking_lot_id
+        WHERE gun.id = #{id,jdbcType=INTEGER}
+        limit 1
+    </select>
+
+</mapper>

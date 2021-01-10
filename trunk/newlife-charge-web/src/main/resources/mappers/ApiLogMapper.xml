@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.ApiLogMapper">
+
+    <sql id="Base_Column_List">
+        id, server, host, controller, action, imei, device, user_agent, hash, token, validation_result, 
+        ip_address, mac_address, os_version, create_time
+    </sql>
+
+    <sql id="Blob_Column_List">
+        path_query
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.ApiLog">
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from tb_api_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_api_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.ApiLog">
+        insert into tb_api_log (id, server, host, 
+            controller, action, imei, 
+            device, user_agent, hash, 
+            token, validation_result, ip_address, 
+            mac_address, os_version, create_time, 
+            path_query)
+        values (#{id,jdbcType=INTEGER}, #{server,jdbcType=VARCHAR}, #{host,jdbcType=VARCHAR}, 
+            #{controller,jdbcType=VARCHAR}, #{action,jdbcType=VARCHAR}, #{imei,jdbcType=VARCHAR}, 
+            #{device,jdbcType=VARCHAR}, #{userAgent,jdbcType=VARCHAR}, #{hash,jdbcType=VARCHAR}, 
+            #{token,jdbcType=VARCHAR}, #{validationResult,jdbcType=VARCHAR}, #{ipAddress,jdbcType=VARCHAR}, 
+            #{macAddress,jdbcType=VARCHAR}, #{osVersion,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+            #{pathQuery,jdbcType=LONGVARCHAR})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.ApiLog">
+        update tb_api_log
+        <set>
+            <if test="server != null">
+                server = #{server,jdbcType=VARCHAR},
+            </if>
+            <if test="host != null">
+                host = #{host,jdbcType=VARCHAR},
+            </if>
+            <if test="controller != null">
+                controller = #{controller,jdbcType=VARCHAR},
+            </if>
+            <if test="action != null">
+                action = #{action,jdbcType=VARCHAR},
+            </if>
+            <if test="imei != null">
+                imei = #{imei,jdbcType=VARCHAR},
+            </if>
+            <if test="device != null">
+                device = #{device,jdbcType=VARCHAR},
+            </if>
+            <if test="userAgent != null">
+                user_agent = #{userAgent,jdbcType=VARCHAR},
+            </if>
+            <if test="hash != null">
+                hash = #{hash,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="validationResult != null">
+                validation_result = #{validationResult,jdbcType=VARCHAR},
+            </if>
+            <if test="ipAddress != null">
+                ip_address = #{ipAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="macAddress != null">
+                mac_address = #{macAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="osVersion != null">
+                os_version = #{osVersion,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="pathQuery != null">
+                path_query = #{pathQuery,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

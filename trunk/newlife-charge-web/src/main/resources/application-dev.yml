@@ -1,0 +1,81 @@
+#server
+server:
+  port: 8990
+  address: 127.0.0.1
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /
+
+spring:
+    datasource:
+        name: new_life_charge
+        url: jdbc:mysql://127.0.0.1:3306/new_life_charge?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+        username: root
+        password: 123456
+
+#redis
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+      database: 12
+
+logging:
+  path: /data/logs/newlife_charge/dev
+  file: dev
+
+#后台接口IP(外网)
+newLife:
+  charge:
+    ip: 127.0.0.1
+
+
+#  充电桩控制中心
+charge:
+  pile:
+    server:
+      #IP（socket层）
+      ip: 127.0.0.1
+      #请求地址
+      path: http://127.0.0.1:8991
+      #同步时段电价和服务费地址
+      syncTimeAndServicePriceUri: /api/chargePileServer/syncTimeAndServicePrice
+      #启动/停止充电
+      startStopChargeUri: /api/chargePileServer/startStopCommand
+
+
+
+##图片服务器
+#内网
+#imageService: http://upload2.mseenet.com
+#外网
+imageService: http://127.0.0.1
+
+#通用服务器地址
+commonService:
+##  七牛6，正式环境
+  path: http://127.0.0.1:8090
+  #上传图片msKey
+  picApiKey:  12345678
+  picSecretKey: 87654321
+  picMsApiKey:  img_123456
+  uploadFile: /api/img/uploadFile
+  uploadFiles:  /api/img/uploadFiles
+  #发送邮箱msKey
+  emailApiKey: 1234567890
+  emailSecretKey: 0987654321
+  #发送短信msKey
+  msmApiKey: 123456789
+  msmSecretKey: 987654321
+  sendSmsPath: /api/sms/sendMessage
+
+#短信配置
+sms:
+  #是否发送短信 （true:发送，false:不发送）
+  isSend: false
+
+#充值退款
+pay:
+  #是否启用真实支付数据（true：启用，false：不启用）
+  isReal: false

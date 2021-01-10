@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.RoleInfoMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, role_name, custom, project, remark, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.RoleInfo">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_role_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_role_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.RoleInfo">
+        insert into tb_role_info (id, station_id, role_name,
+            custom, project, remark, 
+            create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{roleName,jdbcType=VARCHAR},
+            #{custom,jdbcType=TINYINT}, #{project,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, 
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.RoleInfo">
+        update tb_role_info
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="roleName != null">
+                role_name = #{roleName,jdbcType=VARCHAR},
+            </if>
+            <if test="custom != null">
+                custom = #{custom,jdbcType=TINYINT},
+            </if>
+            <if test="project != null">
+                project = #{project,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="page" resultType="RoleInfo">
+        select * from  tb_role_info
+        where 1=1
+        <if test="project != null">
+            and project=#{project}
+        </if>
+        <if test="stationId != null">
+            and station_id = #{stationId,jdbcType=INTEGER}
+        </if>
+        order by id desc
+    </select>
+
+
+    <delete id="deleteByIds">
+        delete from tb_role_info where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <select id="getByQuery" resultType="com.newlife.charge.core.domain.RoleInfo">
+        select *
+        from tb_role_info
+        <where>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="roleName != null">
+                and role_name = #{roleName,jdbcType=VARCHAR}
+            </if>
+            <if test="project != null">
+                and project = #{project,jdbcType=TINYINT}
+            </if>
+        </where>
+    </select>
+    <select id="getByUserId" resultType="com.newlife.charge.core.domain.RoleInfo">
+        select r.*
+        from tb_role_info r
+        left join tb_role_user_ref ruf on r.id = ruf.role_id
+        where ruf.user_id = #{userId} and r.station_id = #{stationId} and project = #{project,jdbcType=TINYINT}
+    </select>
+</mapper>

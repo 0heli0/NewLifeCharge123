@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.NewLifeSpendLogMapper">
+
+    <sql id="Base_Column_List">
+        id, money_sn, order_id, order_sn, type, type_remark, amount, user_id,user_type, user_name,
+        user_mobile, user_avatar_url, user_old_balance,user_gain_amount, user_now_balance, station_id, station_name,
+        commission_ration, service_price, station_gain_amount, station_old_no_check_amount, 
+        station_now_no_check_amount, station_old_balance, station_now_balance, new_life_gain_amount,
+        remark, create_time,station_gain_amount_charge,station_gain_amount_service,coupon_amount,coupon_type
+    </sql>
+
+    <sql id="Base_Column_List_Alias">
+        tnlsl.id, tnlsl.money_sn, tnlsl.order_id, tnlsl.order_sn, tnlsl.type, tnlsl.type_remark, tnlsl.amount, tnlsl.user_id,
+        tnlsl.user_type, tnlsl.user_name,tnlsl.user_mobile, tnlsl.user_avatar_url, tnlsl.user_old_balance,tnlsl.user_gain_amount,
+        tnlsl.user_now_balance,tnlsl.station_id, tnlsl.station_name,tnlsl.commission_ration, tnlsl.service_price,
+        tnlsl.station_gain_amount, tnlsl.station_old_no_check_amount,tnlsl.station_now_no_check_amount,
+        tnlsl.station_old_balance, tnlsl.station_now_balance, tnlsl.new_life_gain_amount,
+        tnlsl.remark, tnlsl.create_time,tnlsl.station_gain_amount_charge,tnlsl.station_gain_amount_service,tnlsl.coupon_amount,
+        tnlsl.coupon_type
+    </sql>
+
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.NewLifeSpendLog">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_new_life_spend_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_new_life_spend_log
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.NewLifeSpendLog">
+        insert into tb_new_life_spend_log (id, money_sn, order_id, 
+            order_sn, type, type_remark, 
+            amount, user_id,user_type, user_name,
+            user_mobile, user_avatar_url, user_old_balance, user_gain_amount,
+            user_now_balance, station_id, station_name,
+            commission_ration, service_price, station_gain_amount, 
+            station_old_no_check_amount, station_now_no_check_amount, 
+            station_old_balance, station_now_balance,
+            new_life_gain_amount, remark, create_time,
+            station_gain_amount_charge,station_gain_amount_service,coupon_amount,coupon_type
+            )
+        values (#{id,jdbcType=INTEGER}, #{moneySn,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER},
+            #{orderSn,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{typeRemark,jdbcType=TINYINT}, 
+            #{amount,jdbcType=DECIMAL}, #{userId,jdbcType=INTEGER}, #{userType,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR},
+            #{userMobile,jdbcType=VARCHAR}, #{userAvatarUrl,jdbcType=VARCHAR}, #{userOldBalance,jdbcType=DECIMAL}, #{userGainAmount,jdbcType=DECIMAL},
+            #{userNowBalance,jdbcType=DECIMAL}, #{stationId,jdbcType=INTEGER}, #{stationName,jdbcType=VARCHAR}, 
+            #{commissionRation,jdbcType=DECIMAL}, #{servicePrice,jdbcType=DECIMAL}, #{stationGainAmount,jdbcType=DECIMAL}, 
+            #{stationOldNoCheckAmount,jdbcType=DECIMAL}, #{stationNowNoCheckAmount,jdbcType=DECIMAL}, 
+            #{stationOldBalance,jdbcType=DECIMAL}, #{stationNowBalance,jdbcType=DECIMAL},
+            #{newLifeGainAmount,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+            #{stationGainAmountCharge,jdbcType=DECIMAL}, #{stationGainAmountService,jdbcType=DECIMAL}, #{couponAmount,jdbcType=DECIMAL},
+            #{couponType,jdbcType=TINYINT}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.NewLifeSpendLog">
+        update tb_new_life_spend_log
+        <set>
+            <if test="moneySn != null">
+                money_sn = #{moneySn,jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
+            </if>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="typeRemark != null">
+                type_remark = #{typeRemark,jdbcType=TINYINT},
+            </if>
+            <if test="amount != null">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="userMobile != null">
+                user_mobile = #{userMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="userAvatarUrl != null">
+                user_avatar_url = #{userAvatarUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="userOldBalance != null">
+                user_old_balance = #{userOldBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="userGainAmount != null">
+                user_gain_amount = #{userGainAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="userNowBalance != null">
+                user_now_balance = #{userNowBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="stationName != null">
+                station_name = #{stationName,jdbcType=VARCHAR},
+            </if>
+            <if test="commissionRation != null">
+                commission_ration = #{commissionRation,jdbcType=DECIMAL},
+            </if>
+            <if test="servicePrice != null">
+                service_price = #{servicePrice,jdbcType=DECIMAL},
+            </if>
+            <if test="stationGainAmount != null">
+                station_gain_amount = #{stationGainAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="stationOldNoCheckAmount != null">
+                station_old_no_check_amount = #{stationOldNoCheckAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="stationNowNoCheckAmount != null">
+                station_now_no_check_amount = #{stationNowNoCheckAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="stationOldBalance != null">
+                station_old_balance = #{stationOldBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="stationNowBalance != null">
+                station_now_balance = #{stationNowBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="newLifeGainAmount != null">
+                new_life_gain_amount = #{newLifeGainAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+
+            <if test="stationGainAmountCharge != null">
+                station_gain_amount_charge = #{stationGainAmountCharge,jdbcType=DECIMAL},
+            </if>
+            <if test="stationGainAmountService != null">
+                station_gain_amount_service = #{stationGainAmountService,jdbcType=DECIMAL},
+            </if>
+            <if test="couponAmount != null">
+                coupon_amount = #{couponAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="couponType != null">
+                coupon_type = #{couponType,jdbcType=DECIMAL},
+            </if>
+
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="page" resultType="com.newlife.charge.core.domain.exModel.NewLifeSpendLogEx">
+        select
+        <include refid="Base_Column_List_Alias" />,tci.company_name,tnlsl.create_time as showTime
+        from  tb_new_life_spend_log tnlsl
+        LEFT JOIN tb_station_info tsi on tsi.id=tnlsl.station_id
+        LEFT JOIN tb_company_info tci on tci.id=tsi.company_id
+        <where>
+            <if test="userMobile!=null and userMobile!=''">
+                and tnlsl.user_mobile =#{userMobile}
+            </if>
+            <if test="userType!=null">
+                and tnlsl.user_type =#{userType}
+            </if>
+            <if test="type!=null">
+                and tnlsl.type =#{type}
+            </if>
+            <if test="stationId!=null">
+                and tnlsl.station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="startTime!=null">
+                and tnlsl.create_time &gt;= #{startTime,jdbcType=INTEGER}
+            </if>
+            <if test="endTime!=null">
+                and tnlsl.create_time &lt;= #{endTime,jdbcType=INTEGER}
+            </if>
+
+        </where>
+
+        order by tnlsl.create_time desc
+    </select>
+
+    <!--资金流水-账户充值详情-->
+    <select id="getRechargeInfo"  resultType="com.newlife.charge.core.dto.out.NewLifeSpendLogRechargeOut">
+        select tusl.user_mobile,
+        tusl.id,tusl.money_sn,tusl.type,'' as type_name,tusl.type_remark,'' as type_remark_name,tusl.amount,
+        tusl.user_id,tusl.user_old_balance,tusl.user_now_balance,tusl.create_time,
+        trl.coupon_price,'' as rate,
+        tor.total_price,tor.pay_type
+        from tb_new_life_spend_log tusl
+        left join tb_order tor on tor.id=tusl.order_id
+        left join tb_recharge_log trl on trl.order_id=tor.id
+        where tusl.type=1 and tusl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--资金流水-充电消费详情-->
+    <select id="getChargeInfo"  resultType="com.newlife.charge.core.dto.out.NewLifeSpendLogChargeOut">
+        select
+            tusl.id,tusl.money_sn,tusl.type,'' as type_name,tusl.type_remark,'' as type_remark_name,tusl.amount,
+            tcl.charge_prices, tusl.service_price, tcl.begin_time,tcl.end_time,'' as charging_time,tcl.degree_real,
+            tusl.user_old_balance,tusl.user_now_balance,tcl.price_coupon as coupon_price,
+            tcl.price_real,tor.pay_type,'' as pay_type_name,tusl.user_id,tusl.user_mobile,tusl.station_id,tusl.station_name,
+            tcl.client_charge_type ,'' as client_charge_type_name,
+            tcl.client_gun_code as station_client_gun_code,
+            tcl.parking_lot_code as station_parking_lot_code,
+            tcl.client_code as station_client_code,tusl.create_time,
+            tusl.commission_ration,tusl.station_gain_amount,tusl.station_old_no_check_amount,
+            tusl.station_now_no_check_amount,tusl.station_old_balance,tusl.station_now_balance,tusl.new_life_gain_amount,
+            (case
+             when tc.type=1 or tc.type =2  then '平台'
+             when tc.type=3 then '桩站'
+             when tc.type is null then ''
+             else '其他' end
+            ) as coupon_create_user
+        from tb_new_life_spend_log tusl
+        left join tb_order tor on tor.id=tusl.order_id
+        left join tb_charge_log tcl on tcl.order_id=tor.id
+        left join tb_user_coupon tuc on tuc.id=tcl.user_coupon_id
+        left join tb_coupon tc on tc.id=tuc.coupon_id
+
+        where tusl.type=2 and tusl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--资金流水-余额退款详情-->
+    <select id="getRefundInfo"  resultType="com.newlife.charge.core.dto.out.NewLifeSpendLogRefundOut">
+        select
+        tusl.id,tusl.money_sn,tusl.type,'' as type_name,tusl.type_remark,'' as type_remark_name,tusl.amount,
+        tusl.user_id,tusl.user_mobile,tusl.user_old_balance,tusl.user_now_balance,tusl.create_time,
+        tor.total_price,tor.pay_type
+        from tb_new_life_spend_log tusl
+        left join tb_order tor on tor.id=tusl.order_id
+        left join tb_refund_log trl on trl.order_id=tor.id
+        where tusl.type=3 and tusl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--资金流水-桩站卖电账单详情-->
+    <select id="getStationIncomeInfo"  resultType="com.newlife.charge.core.dto.out.NewLifeSpendLogBillOut">
+        select
+            tusl.id,tusl.money_sn,tusl.type,'' as type_name,tusl.type_remark,'' as type_remark_name,tusl.amount,
+            tusl.station_id,tusl.station_name,tusl.user_mobile as station_user_mobile,tusl.create_time,
+            DATE_SUB(tusl.create_time,interval 1 DAY) as bill_cycle,
+            tusl.commission_ration,tusl.station_gain_amount,tusl.station_old_no_check_amount,
+            tusl.station_now_no_check_amount,tusl.station_old_balance,tusl.station_now_balance,tusl.new_life_gain_amount
+
+        from tb_new_life_spend_log tusl
+        where tusl.type=4 and tusl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--资金流水-服务费佣金详情-->
+    <select id="getCommissionInfo"  resultType="com.newlife.charge.core.dto.out.NewLifeSpendLogCommissionOut">
+        select
+        tusl.id,tusl.money_sn,tusl.type,'' as type_name,tusl.type_remark,'' as type_remark_name,tusl.amount,
+        tusl.station_id,tusl.station_name,tusl.user_mobile as station_user_mobile,tusl.create_time,
+        DATE_SUB(tusl.create_time,interval 1 DAY) as bill_cycle,
+        tusl.commission_ration,tusl.station_gain_amount,tusl.station_old_no_check_amount,
+        tusl.station_now_no_check_amount,tusl.station_old_balance,tusl.station_now_balance,tusl.new_life_gain_amount
+        from tb_new_life_spend_log tusl
+        where tusl.type=5 and tusl.id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getListByUser" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.NewLifeSpendLog">
+        select
+        <include refid="Base_Column_List" />
+        from tb_new_life_spend_log
+        where user_id = #{userId,jdbcType=INTEGER}
+        order by create_time desc
+    </select>
+
+
+
+    <select id="count"  resultType="java.lang.Integer">
+        select count(1)
+        from tb_new_life_spend_log
+            <where>
+                <if test="type!=null">
+                    and type=#{type}
+                </if>
+                <if test="startTime!=null">
+                    and create_time &gt;=#{startTime}
+                </if>
+                <if test="endTime!=null">
+                    and create_time &lt;=#{endTime}
+                </if>
+            </where>
+    </select>
+
+    <select id="getDaySpendLog"  resultType="com.newlife.charge.core.domain.exModel.NewLifeSpendLogEx">
+        select *
+        from tb_new_life_spend_log
+        <where>
+            <if test="stationId != null">
+                and station_id = #{stationId,jdbcType=INTEGER}
+            </if>
+            <if test="dateTime != null">
+                and DATE_FORMAT(create_time,'%Y-%m-%d') = #{dateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="type!=null">
+                and type =#{type}
+            </if>
+        </where>
+        order by create_time desc
+        <if test="limitNo != null">
+            limit #{limitNo}
+        </if>
+    </select>
+
+    <select id="getChargeListByUser" parameterType="java.lang.Integer"
+            resultType="com.newlife.charge.core.domain.exModel.NewLifeSpendLogEx">
+        SELECT life.* FROM tb_new_life_spend_log life
+        JOIN tb_recharge_log log ON log.order_id = life.order_id
+        WHERE life.user_id = #{userId, jdbcType=INTEGER}
+         and life.type = #{chargeType, jdbcType=INTEGER}
+         and life.type_remark = #{chargeTypeRemark, jdbcType=INTEGER}
+         <if test="type != null and type == 1">
+             and log.final_price = log.total_price
+         </if>
+        <if test="type != null and type == 2">
+            and log.final_price &gt; log.total_price
+        </if>
+    </select>
+    <select id="stationGainAmount" resultType="com.newlife.charge.core.domain.NewLifeSpendLog">
+        SELECT * FROM tb_new_life_spend_log where type = #{type, jdbcType=INTEGER} and station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

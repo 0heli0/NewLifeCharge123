@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.SmsLogMapper">
+
+    <select id="get" resultType="SmsLog">
+        select *  from tb_sms_log where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="getLast" resultType="SmsLog">
+        select *  from tb_sms_log
+        where mobile = #{mobile,jdbcType=VARCHAR} and  template_id = #{templateId,jdbcType=VARCHAR}
+        ORDER BY create_time desc limit 1
+    </select>
+
+
+    <update id="updateSendStatusByParams">
+        update tb_sms_log
+        <set>
+            <if test="sendStatus != null">
+                send_status = #{sendStatus,jdbcType=TINYINT},
+            </if>
+        </set>
+        where 1=1
+        and mobile = #{mobile,jdbcType=VARCHAR}
+        and sms_content = #{smsContent,jdbcType=VARCHAR}
+        and template_id = #{templateId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delete">
+        delete from tb_sms_log where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_sms_log (id, mobile, sms_content, 
+            template_id, send_status, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{mobile,jdbcType=VARCHAR}, #{smsContent,jdbcType=VARCHAR}, 
+            #{templateId,jdbcType=VARCHAR}, #{sendStatus,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update">
+        update tb_sms_log
+        <set>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="smsContent != null">
+                sms_content = #{smsContent,jdbcType=VARCHAR},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="sendStatus != null">
+                send_status = #{sendStatus,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="countSendNumber" resultType="java.lang.Integer">
+        SELECT COUNT(CASE WHEN send_status=1 THEN 1 ELSE NULL END) AS send_number
+        FROM tb_sms_log WHERE mobile=#{mobile} AND template_id=#{templateId} AND create_time LIKE CONCAT('%',#{createTime},'%')
+    </select>
+</mapper>

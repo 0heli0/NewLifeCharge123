@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.NoticeMapper">
+
+    <sql id="Base_Column_List">
+        id, title, create_time
+    </sql>
+
+    <sql id="Blob_Column_List">
+        content
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.Notice">
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from tb_notice
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_notice
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.Notice">
+        insert into tb_notice (id, title, create_time, 
+            content)
+        values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+            #{content,jdbcType=LONGVARCHAR})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.Notice">
+        update tb_notice
+        <set>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <select id="page" resultType="Notice">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from  tb_notice
+        where 1=1
+        <if test="title!=null and title!=''">
+            and title like CONCAT('%',#{title},'%')
+        </if>
+        order by id desc
+    </select>
+
+    <select id="pageCar" resultType="CarNoticeOut">
+
+        select tn.id,tn.title,tn.content,tn.create_time,IFNULL(tnu.status,0) as status
+        from tb_notice tn
+        left JOIN (select * from  tb_notice_user where user_id =#{userId,jdbcType=INTEGER}) tnu on tnu.notice_id=tn.id
+        ORDER BY tn.create_time desc
+    </select>
+
+
+
+    <delete id="deleteByIds">
+        delete from tb_notice where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+    <select id="getNewCount" resultType="java.lang.Integer">
+        select
+        (
+         count(0) -
+         (
+          select count(0) from tb_notice_user `user`
+          JOIN tb_notice `no` ON `user`.user_id = #{userId, jdbcType=VARCHAR} AND `user`.notice_id = `no`.id
+		  where `user`.status = 1
+		  )
+		)
+        as `count` from tb_notice `notice`
+
+    </select>
+
+
+
+</mapper>

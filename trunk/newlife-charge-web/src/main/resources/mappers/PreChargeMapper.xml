@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.PreChargeMapper">
+
+    <sql id="Base_Column_List">
+        id, original_price, final_price, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.PreCharge">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_pre_charge
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_pre_charge
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.PreCharge">
+        insert into tb_pre_charge (original_price, final_price,
+            create_time)
+        values (#{originalPrice,jdbcType=DECIMAL}, #{finalPrice,jdbcType=DECIMAL},
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.PreCharge">
+        update tb_pre_charge
+        <set>
+            <if test="originalPrice != null">
+                original_price = #{originalPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="finalPrice != null">
+                final_price = #{finalPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <!-- 分页查询 -->
+    <select id="page" resultType="com.newlife.charge.core.domain.PreCharge">
+        select
+        <include refid="Base_Column_List"/>
+      from tb_pre_charge
+      order by original_price asc
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByIds">
+        delete from tb_pre_charge
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- 批量新增 -->
+    <insert id="batchSave" useGeneratedKeys="true" keyProperty="id" >
+        insert into tb_pre_charge (original_price, final_price,
+            create_time)
+        values
+            <foreach collection="list" index="index" item="item" separator="," >
+                (#{item.originalPrice,jdbcType=DECIMAL}, #{item.finalPrice,jdbcType=DECIMAL},
+                #{item.createTime,jdbcType=TIMESTAMP})
+            </foreach>
+    </insert>
+    <select id="getByPrice" parameterType="java.math.BigDecimal" resultType="com.newlife.charge.core.domain.PreCharge">
+        select
+        <include refid="Base_Column_List" />
+        from tb_pre_charge
+        where original_price = #{originalPrice,jdbcType=DECIMAL}
+        limit 1
+    </select>
+</mapper>

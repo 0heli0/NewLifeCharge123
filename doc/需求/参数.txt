@@ -1,0 +1,15 @@
+充电桩：
+总后台： http://a.xmnewlife.com/   帐号： admin  密码：mseenet123
+
+新活充电接口文档地址：
+https://www.showdoc.cc/229588333157176
+密码：Aa147369
+
+数据库文档(很老的了)：
+https://charge.xmnewlife.com/db/
+
+旧版数据库服务器（SqlServer 远程桌面）：
+120.78.71.255(公)
+192.168.0.103（内）
+Administrator
+密码：PVc3CfoQ0++3

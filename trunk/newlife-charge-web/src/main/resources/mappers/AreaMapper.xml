@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.AreaMapper">
+
+    <sql id="Base_Column_List">
+        id, parent_id, name, short_name, merger_name, merger_short_name, level_type, city_code, 
+        zip_code, pin_yin, jian_pin, first_char, lng, lat
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.Area">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_area
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_area
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.Area">
+        insert into tb_area (id, parent_id, name, 
+            short_name, merger_name, merger_short_name, 
+            level_type, city_code, zip_code, 
+            pin_yin, jian_pin, first_char, 
+            lng, lat)
+        values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+            #{shortName,jdbcType=VARCHAR}, #{mergerName,jdbcType=VARCHAR}, #{mergerShortName,jdbcType=VARCHAR}, 
+            #{levelType,jdbcType=TINYINT}, #{cityCode,jdbcType=VARCHAR}, #{zipCode,jdbcType=VARCHAR}, 
+            #{pinYin,jdbcType=VARCHAR}, #{jianPin,jdbcType=VARCHAR}, #{firstChar,jdbcType=VARCHAR}, 
+            #{lng,jdbcType=DECIMAL}, #{lat,jdbcType=DECIMAL})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.Area">
+        update tb_area
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="shortName != null">
+                short_name = #{shortName,jdbcType=VARCHAR},
+            </if>
+            <if test="mergerName != null">
+                merger_name = #{mergerName,jdbcType=VARCHAR},
+            </if>
+            <if test="mergerShortName != null">
+                merger_short_name = #{mergerShortName,jdbcType=VARCHAR},
+            </if>
+            <if test="levelType != null">
+                level_type = #{levelType,jdbcType=TINYINT},
+            </if>
+            <if test="cityCode != null">
+                city_code = #{cityCode,jdbcType=VARCHAR},
+            </if>
+            <if test="zipCode != null">
+                zip_code = #{zipCode,jdbcType=VARCHAR},
+            </if>
+            <if test="pinYin != null">
+                pin_yin = #{pinYin,jdbcType=VARCHAR},
+            </if>
+            <if test="jianPin != null">
+                jian_pin = #{jianPin,jdbcType=VARCHAR},
+            </if>
+            <if test="firstChar != null">
+                first_char = #{firstChar,jdbcType=VARCHAR},
+            </if>
+            <if test="lng != null">
+                lng = #{lng,jdbcType=DECIMAL},
+            </if>
+            <if test="lat != null">
+                lat = #{lat,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="page" resultType="AreaOut">
+        select id,name from tb_area
+        <where>
+            <if test="parentId!=null">
+                and parent_id=#{parentId}
+            </if>
+            <if test="parentId==null">
+                and level_type=1
+            </if>
+        </where>
+    </select>
+
+</mapper>

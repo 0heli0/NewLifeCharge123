@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationDetailMapper">
+
+    <sql id="Base_Column_List">
+        id, station_id, name, province, city, address, lat, lng, cover_img, managers, free_parking, 
+        parking_fee, parking, business_hours, tel, star, type, remark, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationDetail">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_station_detail
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByStationId" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StationDetail">
+        select
+        <include refid="Base_Column_List" />
+        from tb_station_detail
+        where station_id = #{stationId,jdbcType=INTEGER}
+    </select>
+
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_station_detail
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.StationDetail">
+        insert into tb_station_detail (id, station_id, name, 
+            province, city, address, 
+            lat, lng, cover_img, 
+            managers, free_parking, parking_fee, 
+            parking, business_hours, tel, 
+            star, type, remark, 
+            create_time)
+        values (#{id,jdbcType=INTEGER}, #{stationId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+            #{province,jdbcType=INTEGER}, #{city,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, 
+            #{lat,jdbcType=DECIMAL}, #{lng,jdbcType=DECIMAL}, #{coverImg,jdbcType=VARCHAR}, 
+            #{managers,jdbcType=VARCHAR}, #{freeParking,jdbcType=TINYINT}, #{parkingFee,jdbcType=VARCHAR}, 
+            #{parking,jdbcType=TINYINT}, #{businessHours,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, 
+            #{star,jdbcType=TINYINT}, #{type,jdbcType=TINYINT}, #{remark,jdbcType=VARCHAR}, 
+            #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StationDetail">
+        update tb_station_detail
+        <set>
+            <if test="stationId != null">
+                station_id = #{stationId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                province = #{province,jdbcType=INTEGER},
+            </if>
+            <if test="city != null">
+                city = #{city,jdbcType=INTEGER},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="lat != null">
+                lat = #{lat,jdbcType=DECIMAL},
+            </if>
+            <if test="lng != null">
+                lng = #{lng,jdbcType=DECIMAL},
+            </if>
+            <if test="coverImg != null">
+                cover_img = #{coverImg,jdbcType=VARCHAR},
+            </if>
+            <if test="managers != null">
+                managers = #{managers,jdbcType=VARCHAR},
+            </if>
+            <if test="freeParking != null">
+                free_parking = #{freeParking,jdbcType=TINYINT},
+            </if>
+            <if test="parkingFee != null">
+                parking_fee = #{parkingFee,jdbcType=VARCHAR},
+            </if>
+            <if test="parking != null">
+                parking = #{parking,jdbcType=TINYINT},
+            </if>
+            <if test="businessHours != null">
+                business_hours = #{businessHours,jdbcType=VARCHAR},
+            </if>
+            <if test="tel != null">
+                tel = #{tel,jdbcType=VARCHAR},
+            </if>
+            <if test="star != null">
+                star = #{star,jdbcType=TINYINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+
+
+
+    <delete id="deleteByIds">
+        delete from tb_station_detail where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </delete>
+
+
+    <select id="infosById" resultType="com.newlife.charge.core.domain.StationDetail">
+        select
+        <include refid="Base_Column_List" />
+        from tb_station_detail
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

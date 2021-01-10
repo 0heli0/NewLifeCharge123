@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StationHomeMapper">
+
+    <select id="mapStation" parameterType="com.newlife.charge.core.dto.in.StationHomeListIn"
+            resultType="com.newlife.charge.core.dto.out.StationHomeMapListOut">
+        SELECT
+        detail.station_id,
+        detail.lat,
+        detail.lng
+        FROM
+        tb_station_detail detail
+        JOIN tb_station_info info ON info.id = detail.station_id
+        WHERE
+        info.`status` = 1
+        AND ROUND(
+        6378.138 * 2 * ASIN(
+        SQRT(
+        POW(
+        SIN( ( #{lat, jdbcType=DOUBLE} * PI( ) / 180 - detail.lat * PI( ) / 180 ) / 2 ),
+        2
+        ) + COS( #{lat, jdbcType=DOUBLE} * PI( ) / 180 ) * COS( detail.lat * PI( ) / 180 ) * POW(
+        SIN( ( #{lng, jdbcType=DOUBLE} * PI( ) / 180 - detail.lng * PI( ) / 180 ) / 2 ),
+        2
+        )
+        )
+        ) * 1000
+        ) &lt;= #{distance, jdbcType=INTEGER}
+    </select>
+
+    <select id="stationDetail" parameterType="java.lang.Integer"
+            resultType="com.newlife.charge.core.domain.StationHomeDetail">
+        SELECT
+        info.charge_price,
+        info.service_price,
+        price.increase,
+        detail.`name`,
+        detail.address,
+        detail.lat,
+        detail.lng
+        FROM
+        tb_station_info info
+        JOIN tb_station_detail detail ON detail.station_id = info.id
+        LEFT JOIN tb_station_time_price price ON price.station_id = info.id
+        and price.time_begin &lt;= CURTIME() AND price.time_end &gt;= CURTIME()
+
+        <where>
+            info.id = #{stationId, jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getStationCouponCount" resultType="java.lang.Integer">
+        SELECT
+        count(0)
+        FROM
+        tb_coupon coupon
+        LEFT JOIN tb_coupon_station_ref ref ON coupon.id = ref.coupon_id
+        WHERE
+        coupon.collect_start_time &lt;= NOW( )
+        AND collect_end_time &gt;= NOW( )
+        AND coupon.use_end_time &gt;= NOW( )
+        AND coupon.left_number &gt; 0
+        AND coupon.`status` = 0
+        AND (ref.station_id = #{stationId, jdbcType=INTEGER} or coupon.scope_type = 0)
+        AND coupon.type != 1
+    </select>
+
+    <select id="getStationCouponCountByIds" resultType="com.newlife.charge.core.domain.StationCouponCount">
+        SELECT ref.station_id,COUNT(0) AS total
+        FROM `tb_coupon_station_ref` ref
+        JOIN tb_coupon coupon ON coupon.id = ref.coupon_id
+        WHERE
+        coupon.use_end_time &gt;= NOW()
+        AND coupon.left_number &gt; 0
+        AND coupon.`status` = 0
+        AND ref.station_id in
+        <foreach collection="stationIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY ref.station_id;
+    </select>
+
+    <select id="stationList" parameterType="com.newlife.charge.core.dto.in.StationHomeListIn"
+            resultType="com.newlife.charge.core.dto.out.StationHomeListOut">
+        SELECT
+        info.id as station_id,
+        info.charge_price,
+        info.service_price,
+        detail.name,
+        detail.cover_img,
+        detail.address,
+        detail.lng,
+        detail.lat,
+        ( SELECT count( 0 ) FROM tb_station_client_gun WHERE station_id = info.id ) AS charge_gun,
+        ( SELECT count( 0 ) FROM tb_station_client_gun WHERE station_id = info.id AND `status` = 2 ) AS free_gun
+        FROM
+        tb_station_info info
+        JOIN tb_station_detail detail ON info.id = detail.station_id
+        <where>
+            ROUND(
+            6378.138 * 2 * ASIN(
+            SQRT(
+            POW(
+            SIN( ( #{lat, jdbcType=DOUBLE} * PI( ) / 180 - detail.lat * PI( ) / 180 ) / 2 ),
+            2
+            ) + COS( #{lat, jdbcType=DOUBLE} * PI( ) / 180 ) * COS( detail.lat * PI( ) / 180 ) * POW(
+            SIN( ( #{lng, jdbcType=DOUBLE} * PI( ) / 180 - detail.lng * PI( ) / 180 ) / 2 ),
+            2
+            )
+            )
+            ) * 1000
+            ) &lt;= #{distance, jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getUsefulCouponCount" resultType="java.lang.Integer">
+        SELECT
+        count(0)
+        FROM
+        tb_coupon
+        WHERE
+        type = 2
+        AND scope_type = 0
+        AND use_end_time &gt;=NOW()
+        AND left_number &gt; 0
+        AND `status` = 0
+    </select>
+</mapper>

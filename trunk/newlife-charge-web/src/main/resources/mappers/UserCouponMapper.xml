@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.UserCouponMapper">
+
+    <sql id="Base_Column_List">
+        id, coupon_id, user_id, serial_number, status, frozen_time, order_sn, create_time
+    </sql>
+    <sql id="Coupon_Base_Column_List">
+        id, station_id, type, price, threshold_price, total_number, limit_number, left_number,
+        status, collect_start_time, collect_end_time, use_start_time, use_end_time, create_time
+    </sql>
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.UserCoupon">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_user_coupon
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_user_coupon
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.UserCoupon">
+        insert into tb_user_coupon (coupon_id, user_id,
+            serial_number, status, frozen_time, 
+            order_sn, create_time)
+        values (#{couponId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+            #{serialNumber,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{frozenTime,jdbcType=TIMESTAMP}, 
+            #{orderSn,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.UserCoupon">
+        update tb_user_coupon
+        <set>
+            <if test="couponId != null">
+                coupon_id = #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="serialNumber != null">
+                serial_number = #{serialNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="frozenTime != null">
+                frozen_time = #{frozenTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderSn != null">
+                order_sn = #{orderSn,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!-- 查询通用充值优惠券 -->
+    <select id="getGeneralChargeCoupon" parameterType="com.newlife.charge.core.dto.in.UserCouponQuery"
+            resultType="com.newlife.charge.core.dto.out.UserCouponResult">
+        SELECT
+        coupon.*,
+        ( CASE WHEN
+          coupon.limit_number &gt; (select count(0) from tb_user_coupon where coupon_id = coupon.id AND user_id = #{userId, jdbcType=INTEGER})
+          THEN 1 ELSE 0 END) AS take_status
+        FROM tb_coupon coupon
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            LEFT JOIN tb_coupon_user_read_ref read_ref on read_ref.coupon_id = coupon.id
+            AND read_ref.user_id = #{userId, jdbcType=INTEGER}
+        </if>
+        WHERE
+        coupon.type = 1
+        AND coupon.collect_start_time &lt;= NOW()
+        AND coupon.collect_end_time &gt;= NOW()
+        AND coupon.use_end_time &gt;= NOW()
+        AND coupon.status = 0
+        AND coupon.left_number &gt; 0
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            AND (ISNULL(read_ref.is_read) or read_ref.is_read = 0)
+        </if>
+        ORDER BY coupon.price DESC
+    </select>
+
+    <!-- 查询通用用电优惠券 -->
+    <select id="getGeneralElectroCoupon" parameterType="com.newlife.charge.core.dto.in.UserCouponQuery"
+            resultType="com.newlife.charge.core.dto.out.UserCouponResult">
+        SELECT
+        coupon.*,
+        ( CASE WHEN
+        coupon.limit_number &gt; (select count(0) from tb_user_coupon where coupon_id = coupon.id AND user_id = #{userId, jdbcType=INTEGER})
+        THEN 1 ELSE 0 END) AS take_status
+        FROM tb_coupon coupon
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            LEFT JOIN tb_coupon_user_read_ref read_ref on read_ref.coupon_id = coupon.id
+            AND read_ref.user_id = #{userId, jdbcType=INTEGER}
+        </if>
+        WHERE
+        coupon.type = 2
+        AND coupon.collect_start_time &lt;= NOW()
+        AND coupon.collect_end_time &gt;= NOW()
+        AND coupon.use_end_time &gt;= NOW()
+        AND coupon.status = 0
+        AND coupon.left_number &gt; 0
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            AND (ISNULL(read_ref.is_read) or read_ref.is_read = 0)
+        </if>
+        ORDER BY coupon.price DESC
+    </select>
+
+    <!-- 查询所有指定桩站用电优惠券 -->
+    <select id="getAllPointElectroCoupon" parameterType="com.newlife.charge.core.dto.in.UserCouponQuery"
+            resultType="com.newlife.charge.core.dto.out.UserCouponResult">
+        SELECT coupon.*,
+        ( CASE WHEN
+        coupon.limit_number &gt; (select count(0) from tb_user_coupon where coupon_id = coupon.id AND user_id = #{userId, jdbcType=INTEGER})
+        THEN 1 ELSE 0 END) AS take_status
+         FROM tb_coupon coupon
+        JOIN tb_coupon_station_ref ref ON ref.coupon_id = coupon.id
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            LEFT JOIN tb_coupon_user_read_ref read_ref on read_ref.coupon_id = coupon.id
+            AND read_ref.user_id = #{userId, jdbcType=INTEGER}
+        </if>
+        WHERE
+        coupon.type = 3
+        AND coupon.collect_start_time &lt;= NOW()
+        AND coupon.collect_end_time &gt;= NOW()
+        AND coupon.use_end_time &gt;= NOW()
+        AND coupon.status = 0
+        AND coupon.left_number &gt; 0
+        <if test="autoIndex != null and autoIndex == 1 and userId != null and userId != 0">
+            AND (ISNULL(read_ref.is_read) or read_ref.is_read = 0)
+        </if>
+        GROUP BY coupon.id
+        ORDER BY coupon.price DESC
+    </select>
+
+    <!-- 查询指定桩站用电优惠券 -->
+    <select id="getPointElectroCoupon" parameterType="com.newlife.charge.core.dto.in.UserCouponQuery"
+            resultType="com.newlife.charge.core.dto.out.UserCouponResult">
+        SELECT coupon.*,
+        ( CASE WHEN
+          coupon.limit_number &gt; (select count(0) from tb_user_coupon where coupon_id = coupon.id AND user_id = #{userId, jdbcType=INTEGER})
+          THEN 1 ELSE 0 END) AS take_status
+         FROM tb_coupon coupon
+        JOIN tb_coupon_station_ref ref ON ref.coupon_id = coupon.id
+        WHERE
+        coupon.type = 3
+        AND coupon.collect_start_time &lt;= NOW()
+        AND coupon.collect_end_time &gt;= NOW()
+        AND coupon.use_end_time &gt;= NOW()
+        AND coupon.status = 0
+        AND coupon.left_number &gt; 0
+        AND ref.station_id = #{stationId, jdbcType=INTEGER}
+        GROUP BY coupon.id
+        ORDER BY coupon.price DESC
+    </select>
+
+    <select id="getCouponLeftNumber" resultType="java.lang.Integer">
+        select left_number from tb_coupon
+        <where>
+            collect_end_time &gt;= now()
+            <if test="id != null">
+             and id = #{id, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="checkCouponLimitNum" resultType="java.lang.Integer">
+        select count(0) from tb_user_coupon
+        where
+        coupon_id = #{id, jdbcType=INTEGER}
+        <if test="status != null">
+        and status = #{status, jdbcType=INTEGER}
+        </if>
+        <if test="userId != null">
+            and user_id = #{userId, jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <update id="updateCoupon" parameterType="com.newlife.charge.core.domain.Coupon">
+      update tb_coupon
+      set left_number = #{leftNumber, jdbcType=INTEGER}
+      where id = #{id, jdbcType=INTEGER}
+    </update>
+
+    <select id="userCouponPage" parameterType="com.newlife.charge.core.dto.in.UserCouponListIn"
+            resultType="com.newlife.charge.core.dto.out.UserCouponPageOut">
+        SELECT
+            uco.id,
+            uco.coupon_id,
+            uco.`status`,
+            co.price,
+            co.threshold_price,
+            co.use_end_time,
+            co.type,
+            co.scope_type,
+            '' AS type_name,
+            ord.pay_time as use_time
+        FROM
+          tb_user_coupon uco
+        JOIN tb_coupon co ON uco.coupon_id = co.id
+        left join tb_order ord on ord.order_sn = uco.order_sn and  uco.order_sn is not null
+        <where>
+
+            <if test="status != null">
+                and uco.status = #{status, jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and uco.user_id = #{userId, jdbcType=INTEGER}
+            </if>
+
+
+        </where>
+    </select>
+
+    <select id="userCouponDetail" parameterType="java.lang.Integer"
+            resultType="com.newlife.charge.core.dto.out.UserCouponDetail">
+        SELECT
+            uco.id,
+            uco.coupon_id,
+            uco.`status`,
+            uco.order_sn,
+            uco.create_time,
+            if(
+            ISNULL(GROUP_CONCAT(detail.`name` separator ','))  , '全部',GROUP_CONCAT(detail.`name` separator ',')
+              ) AS station_name,
+            co.station_id,
+            co.type,
+            co.price,
+            co.threshold_price,
+            co.use_start_time,
+            co.use_end_time
+        FROM
+            tb_user_coupon uco
+        JOIN tb_coupon co ON uco.coupon_id = co.id
+        LEFT JOIN tb_coupon_station_ref ref ON ref.coupon_id = co.id
+        LEFT JOIN tb_station_detail detail ON detail.station_id = ref.station_id
+        <where>
+            uco.id = #{id, jdbcType=INTEGER}
+        </where>
+        GROUP BY uco.id
+    </select>
+
+    <select id="usePage" parameterType="com.newlife.charge.core.dto.in.CouponUseQueryIn"
+            resultType="com.newlife.charge.core.dto.out.CouponUsePageOut">
+        select coupon.id,
+        coupon.`status`,
+        coupon.create_time,
+        coupon.order_sn,
+        `user`.mobile
+         from tb_user_coupon coupon
+        join tb_user `user` on `user`.id = coupon.user_id
+        <where>
+            (coupon.status = 0 or coupon.status = 1)
+            <if test="mobile != null and mobile != '' ">
+               and `user`.mobile LIKE  CONCAT('%',#{mobile},'%')
+            </if>
+            <if test="status != null ">
+                and coupon.status = #{status, jdbcType=TINYINT}
+            </if>
+            <if test="couponId != null">
+                and coupon.coupon_id = #{couponId, jdbcType=INTEGER}
+            </if>
+        </where>
+        order By  coupon.create_time desc
+    </select>
+
+    <select id="getByCouponId" resultType="com.newlife.charge.core.domain.UserCoupon">
+        select * from tb_user_coupon coupon where coupon.coupon_id = #{couponId, jdbcType=INTEGER}
+    </select>
+
+    <select id="getUseableCouponId" resultType="java.lang.Integer">
+        select coupon_id from tb_user_coupon
+        where
+         user_id =  #{userId, jdbcType=INTEGER}
+         and status = #{status, jdbcType=INTEGER}
+    </select>
+
+    <select id="getMaxUsableCoupon" resultType="com.newlife.charge.core.dto.out.MaxUseableCouponOut">
+        select
+        co.id,
+        uc.id AS user_coupon_id,
+        co.price
+        from tb_coupon co
+        JOIN tb_user_coupon uc ON uc.coupon_id = co.id	and uc.user_id = #{userId, jdbcType=INTEGER}
+        and uc.`status` = 0
+        WHERE co.use_end_time &gt;= NOW()
+        AND co.type = 1
+        AND co.`status` = 0
+        AND co.threshold_price &lt;= #{price, jdbcType=DECIMAL}
+        ORDER BY co.use_end_time ASC,
+        co.price DESC, co.collect_start_time ASC, co.collect_start_time ASC
+        LIMIT 1;
+    </select>
+
+    <select id="getFirstToUseCoupon" resultType="com.newlife.charge.core.dto.out.UserUseCoupon">
+
+        SELECT uc.id,co.id as coupon_id, co.type, co.price, co.threshold_price FROM tb_user_coupon uc
+        JOIN tb_coupon co
+        ON co.id = uc.coupon_id and co.`status` = 0 and co.use_end_time >= NOW() and co.threshold_price &lt;= #{chargeAmount, jdbcType=DECIMAL}
+        LEFT JOIN tb_coupon_station_ref ref ON ref.coupon_id = co.id
+        WHERE uc.`status` = 0
+        AND uc.user_id = #{userId, jdbcType=INTEGER}
+        AND (ref.station_id = #{stationId, jdbcType=INTEGER} OR co.scope_type = 0)
+        AND (co.type = 2 OR co.type = 3)
+        ORDER BY co.use_end_time ASC,
+        co.price DESC, co.collect_start_time ASC, co.collect_start_time ASC
+        LIMIT 1
+
+    </select>
+
+    <select id="getByOrederSn" resultType="com.newlife.charge.core.domain.UserCoupon">
+      select
+      <include refid="Base_Column_List"/>
+      from
+        tb_user_coupon
+        <where>
+            <if test="orderSn != null">
+                and order_sn = #{orderSn, jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateStatusByOrederSn">
+        update tb_user_coupon
+         set status = {status, jdbcType=INTEGER}
+         where order_sn = #{orderSn, jdbcType=VARCHAR}
+    </update>
+
+    <update id="setOverdueCoupon">
+        update tb_user_coupon set status = 3
+        where id in
+        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+            ${item}
+        </foreach>
+    </update>
+</mapper>

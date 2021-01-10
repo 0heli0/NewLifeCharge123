@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.NoticeUserMapper">
+
+    <sql id="Base_Column_List">
+        id, notice_id, user_id, status, read_time, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.NoticeUser">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_notice_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_notice_user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+
+    <delete id="removeByUserIdAndNoticeId">
+        delete from tb_notice_user
+        where user_id = #{userId,jdbcType=INTEGER} and notice_id = #{noticeId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"  parameterType="com.newlife.charge.core.domain.NoticeUser">
+        insert into tb_notice_user (id, notice_id, user_id, 
+            status, read_time, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{noticeId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+            #{status,jdbcType=TINYINT}, #{readTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.NoticeUser">
+        update tb_notice_user
+        <set>
+            <if test="noticeId != null">
+                notice_id = #{noticeId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="readTime != null">
+                read_time = #{readTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

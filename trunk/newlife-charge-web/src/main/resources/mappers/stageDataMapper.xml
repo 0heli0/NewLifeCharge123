@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newlife.charge.dao.StageDataMapper">
+
+    <sql id="Base_Column_List">
+        id, client_history_id, time, balance, power, create_time
+    </sql>
+
+    <select id="get" parameterType="java.lang.Integer" resultType="com.newlife.charge.core.domain.StageData">
+        select 
+        <include refid="Base_Column_List" />
+        from tb_stage_data
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from tb_stage_data
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.newlife.charge.core.domain.StageData">
+        insert into tb_stage_data (id, client_history_id, time, 
+            balance, power, create_time
+            )
+        values (#{id,jdbcType=INTEGER}, #{clientHistoryId,jdbcType=INTEGER}, #{time,jdbcType=INTEGER}, 
+            #{balance,jdbcType=VARCHAR}, #{power,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+            )
+    </insert>
+
+    <insert id="insertBatch" >
+        insert into tb_stage_data (id, client_history_id, time,
+            balance, power, create_time
+            )
+        values
+            <foreach collection="stageDataList" item="stageData" separator=",">
+                (
+                #{stageData.id,jdbcType=INTEGER}, #{stageData.clientHistoryId,jdbcType=INTEGER}, #{stageData.time,jdbcType=INTEGER},
+                #{stageData.balance,jdbcType=VARCHAR}, #{stageData.power,jdbcType=VARCHAR}, #{stageData.createTime,jdbcType=TIMESTAMP}
+                )
+            </foreach>
+
+    </insert>
+
+
+    <update id="update" parameterType="com.newlife.charge.core.domain.StageData">
+        update tb_stage_data
+        <set>
+            <if test="clientHistoryId != null">
+                client_history_id = #{clientHistoryId,jdbcType=INTEGER},
+            </if>
+            <if test="time != null">
+                time = #{time,jdbcType=INTEGER},
+            </if>
+            <if test="balance != null">
+                balance = #{balance,jdbcType=VARCHAR},
+            </if>
+            <if test="power != null">
+                power = #{power,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

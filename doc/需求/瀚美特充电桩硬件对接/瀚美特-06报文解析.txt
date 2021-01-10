@@ -1,0 +1,77 @@
+2019-04-19 00:20:03.372 V:41923-01 JR:1 RF: 0 TU:  338.32ms DT:000 TN:0000000000010010 GN: 1 RSN: 310504447 CNO:       18825287465[       462131729] CT:04791 CE:  22.54 SE:   0.00 
+json:[{
+"BaBe":"59.77",
+"BillType":0,
+"busId":"310504447",
+"busType":"113",
+"carSN":"FFFFFFFFFFFFFFFFF","carSNBin":"4646464646464646464646464646464646-17-FFFFFFFFFFFFFFFFF",
+"cardNo":"0000000462131729",
+"chargeInterface":0,
+"chargeMode":"0",
+"consumeBa":"18.26",
+"devicePointNum":"10010",
+"endReason":"0",
+"payFlag":"0",
+"protocolType":0,
+"rdChargingTime":"4791",
+"rdChargingTimeC":4791,
+"soc":"97",
+"stageData":[
+{"balance":3.010,"power":"3.820","time":"0"},
+{"balance":0.0,"power":"0.000","time":"1"},
+{"balance":0.0,"power":"0.000","time":"2"},
+{"balance":0.0,"power":"0.000","time":"3"},
+{"balance":0.0,"power":"0.000","time":"4"},
+{"balance":0.0,"power":"0.000","time":"5"},
+{"balance":0.0,"power":"0.000","time":"6"},
+{"balance":0.0,"power":"0.000","time":"7"},
+{"balance":1.650,"power":"1.520","time":"8"},
+{"balance":13.580,"power":"17.200","time":"9"}
+],
+"stakeBusId":"253","sumE":"25594.92","sumPower":"22.54","sumPowerPS":"22.54","sumS":"25572.38","timeE":"2019-04-19 00:19:59","timeLeft":"0","timeS":"2019-04-18 23:00:08",
+"vcode":"496e4e6bf01e9b1e814d0385bcc2f7b7"}] HGRxLen:277 return:[{"busid":"310504447","cardNo":"0000000462131729","chargeInterface":0,"devicePointNum":"10010","flag":0}] 
+
+DLen:0269-0269-0000  
+7572
+0B01
+1A270000
+06
+11
+02
+1700
+0101 01 01 --1. 立 即 充 电 --16进制小端
+0201 01 00 --0. 自 动 充 电 --16进制小端
+0301 01 71 --113-APP 用 户  --16进制小端
+0401 14 3030303030303034363231333137323900313327 --cardNo:"0000000462131729"--直接StringUtil.byHexASCII --16进制ASCII字符串
+0501 11 4646464646464646464646464646464646 --车辆VIN ：FFFFFFFFFFFFFFFFF--StringUtil.byHexASCII --16进制ASCII字符串
+0601 04 59170000 --59.77 --充电前余额 --16进制小端
+0701 04 3D0E0000 --364.5 --充电电压 --16进制小端
+0801 04 A1070000 --19.53 --充电电流 --16进制小端
+0901 04 B7120000 --4791 --充电时间 --16进制小端
+0A01 04 22070000 --18.26 --充电金额 --16进制小端
+0B01 04 CE080000 --22.54 --充电电能 --16进制小端
+0C01 04 36052700 --25572.38 --充电开始电能 --16进制小端
+0D01 04 040E2700 --25594.92 --充电结束电能 --16进制小端
+0E01 04 00000000 --0 -剩余时间 --16进制小端
+0F01 01 61 -97 -当前soc --16进制小端
+1001 01 00 --0 -是否上传主站 --16进制小端
+1101 01 00 --0 -是否付费 --16进制小端
+1201 01 00 --0 -充电终止原因 --16进制小端
+1301 07 19200418230008 -2019-04-18 23:00:08 --充电开始时间 BCD
+1401 07 19200419001959 -2019-04-19 00:19:59 --充电结束时间 BCD
+1501 04 FFEB8112 -310504447-记录流水号  --16进制小端
+1601 04 FD000000 -253-记录存储序号  --16进制小端
+1701 50 
+7E010000 2D010000 -> "382","301"  --电量和电费均是小端模式，传整数 --16进制小端
+00000000 00000000 
+00000000 00000000 
+00000000 00000000
+00000000 00000000
+00000000 00000000
+00000000 00000000
+00000000 00000000
+98000000 A5000000
+B8060000 4E050000
+68
+57180000
+PileHistoryDataOut{stationClientCode='null', gunCode='null', chargeWay='1', chargeMode='0', chargeCardType='113', chargeCardNo='462131729 13'', carVin='FFFFFFFFFFFFFFFFF', babe='59.77', chargeVoltage='364.5', chargeElectricity='19.53', chargeTime='4791', chargeAmount='18.26', chargeEnergy='22.54', chargeEnergyStart='25572.38', chargeEnergyEnd='25594.92', leftTime='0', currentSoc='97', uploadMaster='0', pay='0', chargeEndReason='0', chargeTimeStart='20190418230008', chargeTimeEnd='20190419001959', recordNo='310504447', recordStorageNo='253', stageDataList={time='1', balance='3.01', power='3.82'},{time='2', balance='0.00', power='0.00'},{time='3', balance='0.00', power='0.00'},{time='4', balance='0.00', power='0.00'},{time='5', balance='0.00', power='0.00'},{time='6', balance='0.00', power='0.00'},{time='7', balance='0.00', power='0.00'},{time='8', balance='0.00', power='0.00'},{time='9', balance='1.65', power='1.52'},{time='10', balance='13.58', power='17.20'}}
