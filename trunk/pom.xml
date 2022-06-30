@@ -23,7 +23,7 @@
         <newlife.charge.version>1.0.0</newlife.charge.version>
         <jjwt.version>0.7.0</jjwt.version>
         <jackson.version>2.7.4</jackson.version>
-        <itextpdf.version>5.5.10</itextpdf.version>
+        <itextpdf.version>5.5.12</itextpdf.version>
         <itext-asian.version>5.2.0</itext-asian.version>
         <java.version>1.8</java.version>
         <swagger2.version>2.6.1</swagger2.version>
